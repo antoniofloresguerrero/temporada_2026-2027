@@ -191,6 +191,540 @@
         #zona-nav { position: sticky; bottom: 0; background: #1e293b; padding: 10px; border-top: 2px solid #38bdf8; z-index: 100; }
         .btn-f { width: 36px !important; height: 36px !important; font-size: 13px !important; }
     }
+
+
+/* PARTE 1: Corrección de Filtros 1ª y 2ª DIV para Móviles */
+@media (max-width: 768px) {
+    /* Forzamos que los contenedores de filtros ocupen todo el ancho y muestren sus botones */
+    .herramientas-unificadas {
+        display: flex;
+        flex-direction: column; /* Se colocan uno debajo de otro */
+        gap: 15px;
+        width: 100%;
+    }
+
+    .filtro-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important; /* Evita que se oculten o colapsen */
+        padding: 12px !important;
+        box-sizing: border-box;
+    }
+
+    /* Distribución de los botones numéricos del 0 al 8 en los filtros de división */
+    .btns-f {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important; /* Cuadrícula limpia de 5 columnas */
+        gap: 6px !important;
+        margin-bottom: 12px;
+        width: 100% !important;
+    }
+
+    /* Hacemos los botones un poco más grandes para que quepan bien los dedos */
+    .btn-f {
+        width: 100% !important;
+        height: 38px !important;
+        font-size: 13px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Ajuste para las etiquetas de texto al lado de los botones */
+    .grupo-f {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .grupo-f::before {
+        content: attr(data-label);
+        color: #38bdf8;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+}
+/* PARTE 2: Transformación de Tabla Gigante a Tarjetas para Móvil */
+@media (max-width: 768px) {
+    /* Ocultamos las cabeceras rígidas de la tabla tradicional */
+    table, thead, tbody, th, td, tr { 
+        display: block !important; 
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    
+    th { display: none !important; } /* Ya no necesitamos los títulos de arriba */
+    
+    /* Cada fila de partido se convierte en una tarjeta independiente */
+    #cuerpoTabla tr {
+        background: #1a222d !important;
+        margin-bottom: 15px !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+        border: 1px solid #334155 !important;
+        height: auto !important; /* Altura libre según el contenido */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    /* Diseño interno de la tarjeta del partido */
+    td {
+        text-align: left !important;
+        padding: 6px 0 !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between; /* Texto a la izquierda, controles a la derecha */
+        gap: 10px;
+    }
+
+    /* Resaltamos el nombre de los equipos en la parte superior de la tarjeta */
+    td:nth-of-type(2) {
+        font-weight: bold;
+        color: #38bdf8;
+        font-size: 15px;
+        border-bottom: 1px solid #334155 !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 6px;
+        display: block !important; /* Ocupa toda la línea superior */
+    }
+    td:nth-of-type(2)::before { content: "Partido: "; color: #94a3b8; font-size: 12px; }
+
+    /* Añadimos etiquetas explicativas antes de cada casilla interactiva */
+    td:nth-of-type(1)::before { content: "Número de Partido:"; color: #94a3b8; }
+    td:nth-of-type(3)::before { content: "Signo 1 (Cuota / %):"; color: #94a3b8; }
+    td:nth-of-type(4)::before { content: "Signo X (Cuota / %):"; color: #94a3b8; }
+    td:nth-of-type(5)::before { content: "Signo 2 (Cuota / %):"; color: #94a3b8; }
+    td:nth-of-type(6)::before { content: "Casilla Base:"; color: #94a3b8; }
+    td:nth-of-type(7)::before { content: "Casilla Difícil:"; color: #94a3b8; }
+    td:nth-of-type(8)::before { content: "Pronóstico Final:"; color: #94a3b8; }
+    td:nth-of-type(9)::before { content: "Participa Elige 8:"; color: #94a3b8; }
+    td:nth-of-type(10)::before { content: "Resultado Real (1X2):"; color: #94a3b8; }
+
+    /* Forzamos que los inputs, selectores y casillas no se deformen en el lateral derecho */
+    .in-pro, .in-res-real, td select, td input {
+        width: auto !important;
+        min-width: 65px !important;
+        height: 36px !important;
+        margin: 0 !important;
+    }
+}
+
+/* CORRECCIÓN INTEGRAL PARA MÓVILES REALES (Sustituye los parches anteriores) */
+@media (max-width: 768px) {
+    /* 1. Forzar que los bloques de filtros no oculten nada */
+    .herramientas-unificadas {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        width: 100% !important;
+    }
+
+    .filtro-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+        height: auto !important;
+    }
+
+    /* 2. ARREGLO DE LOS BOTONES 0 AL 8: Evita que se estiren en líneas gigantes */
+    #btns-e8b, #btns-e8d, .btns-f, [id^="btns-"] {
+        display: flex !important;
+        flex-direction: row !important; /* Forzamos que se coloquen de lado a lado */
+        flex-wrap: wrap !important;     /* Si no caben en una línea, bajan a la siguiente */
+        gap: 6px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+        padding: 5px 0 !important;
+    }
+
+    /* Fijamos un tamaño cuadrado idéntico para que no se deformen en Android */
+    #btns-e8b .btn-f, #btns-e8d .btn-f, .btns-f .btn-f, .btn-f {
+        flex: 0 0 auto !important;
+        width: 36px !important;  /* Tamaño perfecto para tocar con el dedo */
+        height: 36px !important;
+        font-size: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* 3. ARREGLO DE LA TARJETA DE EQUIPOS: Mantiene el texto e inputs alineados */
+    table, thead, tbody, th, td, tr { 
+        display: block !important; 
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    
+    th { display: none !important; } /* Ocultar cabeceras tradicionales */
+    
+    #cuerpoTabla tr {
+        background: #1a222d !important;
+        margin-bottom: 15px !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+        border: 1px solid #334155 !important;
+        height: auto !important;
+    }
+
+    /* Cada línea interna dentro del partido (Signo 1, Signo X, etc.) */
+    td {
+        display: flex !important;
+        flex-direction: row !important;      /* Texto a la izquierda, input a la derecha */
+        justify-content: space-between !important; /* Separa los extremos al máximo */
+        align-items: center !important;
+        padding: 8px 0 !important;
+        border: none !important;
+        border-bottom: 1px solid #2d3848 !important; /* Línea sutil de separación */
+        font-size: 13px !important;
+        width: 100% !important;
+    }
+
+    /* Línea superior con el nombre de los equipos */
+    td:nth-of-type(2) {
+        font-weight: bold !important;
+        color: #38bdf8 !important;
+        font-size: 15px !important;
+        border-bottom: 2px solid #334155 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 8px !important;
+        display: block !important;
+    }
+    td:nth-of-type(2)::before { content: "Partido: "; color: #94a3b8; font-size: 12px; }
+
+    /* Forzar que las casillas de selección e inputs se queden fijos a la derecha sin salirse */
+    .in-pro, .in-res-real, td select, td input {
+        width: 80px !important; /* Tamaño fijo controlado para que no desborde el lateral */
+        min-width: 80px !important;
+        height: 34px !important;
+        margin: 0 !important;
+        background: #0f172a !important;
+        color: #38bdf8 !important;
+        border: 1px solid #38bdf8 !important;
+        border-radius: 6px !important;
+        text-align: center !important;
+    }
+}
+
+ /* CORRECCIÓN DIRECTA PARA LA TARJETA Y NAVEGACIÓN EN MÓVILES */
+@media (max-width: 768px) {
+    /* 1. Forzar que el contenedor de la tarjeta se ponga en vertical en el móvil */
+    #zona-nav {
+        display: flex !important;
+        flex-direction: column !important; /* Tarjeta arriba, botones abajo */
+        width: 100% !important;
+        gap: 15px !important;
+        padding: 10px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Forzar que el bloque de la tarjeta ocupe todo el ancho del Android */
+    .panel-tarjeta {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Alinear el contenedor que envuelve al texto "Quiniela nº..." y a los botones */
+    .panel-tarjeta > div:first-child {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important; /* Texto arriba, fila de botones abajo */
+        gap: 10px !important;
+        text-align: center !important;
+    }
+
+    /* 4. Forzar a que los 4 botones de dirección (|<<, ANT, SIG, >>|) estén de lado a lado */
+    .panel-tarjeta > div:first-child > div:last-child {
+        display: flex !important;
+        flex-direction: row !important; /* Fila horizontal */
+        width: 100% !important;
+        gap: 6px !important; /* Espacio limpio entre ellos */
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Hacer los botones de navegación grandes y cómodos para pulsar con el dedo */
+    .btn-nav {
+        flex: 1 !important; /* Se reparten el ancho de la pantalla a partes iguales */
+        width: auto !important;
+        height: 44px !important; /* Altura perfecta para pantallas táctiles */
+        font-size: 13px !important;
+        font-weight: bold !important;
+        background: #334155 !important;
+        color: white !important;
+        border: 1px solid #475569 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* 6. El recuadro oscuro donde se pintan los signos (1X2) de la apuesta */
+    #cardBox {
+        width: 100% !important;
+        min-height: 380px !important;
+        box-sizing: border-box !important;
+        padding: 12px !important;
+        margin-top: 10px !important;
+    }
+}
+
+    /* REDUCIR EL ANCHO DE LAS CASILLAS 1, X, 2 EN MÓVILES */
+    
+    /* Forzamos a que la tabla ocupe el total de la pantalla táctil */
+    .table-responsive table {
+        width: 100% !important;
+        table-layout: fixed !important; /* Distribución fija controlada */
+    }
+
+    /* Reducimos el espaciado interno (padding) de todas las celdas para ganar espacio */
+    .table-responsive th, 
+    .table-responsive td {
+        padding: 6px 2px !important; /* Espacio mínimo lateral */
+        font-size: 12px !important;  /* Letra compacta para que quepa todo */
+    }
+
+    /* Estrechar columnas específicas: P (Número) y los signos 1, X, 2 */
+    /* th/td nº1 (P), th/td nº3 (1), th/td nº4 (X), th/td nº5 (2) */
+    .table-responsive th:nth-child(1), .table-responsive td:nth-child(1),
+    .table-responsive th:nth-child(3), .table-responsive td:nth-child(3),
+    .table-responsive th:nth-child(4), .table-responsive td:nth-child(4),
+    .table-responsive th:nth-child(5), .table-responsive td:nth-child(5) {
+        width: 25px !important; /* Ancho ultra-estrecho justo para el signo */
+        min-width: 25px !important;
+        max-width: 25px !important;
+        text-align: center !important;
+        padding: 6px 0 !important;
+    }
+
+    /* Darle todo el espacio restante a la columna de los Equipos (Columna 2) */
+    .table-responsive th:nth-child(2), 
+    .table-responsive td:nth-child(2) {
+        width: auto !important; /* Se expande de forma fluida */
+        text-align: left !important; /* Texto alineado a la izquierda para leer mejor */
+        padding-left: 5px !important;
+    }
+
+    /* Estrechar las casillas de control del final (Base, Difícil, Pronóstico, E8, 1X2) */
+    .table-responsive th:nth-child(6), .table-responsive td:nth-child(6),
+    .table-responsive th:nth-child(7), .table-responsive td:nth-child(7),
+    .table-responsive th:nth-child(8), .table-responsive td:nth-child(8),
+    .table-responsive th:nth-child(9), .table-responsive td:nth-child(9),
+    .table-responsive th:nth-child(10), .table-responsive td:nth-child(10) {
+        width: 42px !important; /* Ancho optimizado para los selectores azules pequeños */
+        min-width: 42px !important;
+    }
+
+    /* Ajustar el tamaño de los inputs y cajas azules de pronóstico dentro de la tabla */
+    .table-responsive td select, 
+    .table-responsive td input {
+        width: 100% !important;
+        max-width: 38px !important; /* Evita que desborden su celda estrecha */
+        height: 28px !important;
+        font-size: 11px !important;
+        padding: 2px !important;
+        border-radius: 4px !important;
+    }
+/* CORRECCIÓN INTEGRAL: TABLA CON CUOTAS DE 5 CARACTERES Y TARJETA ABAJO */
+@media (max-width: 768px) {
+    /* 1. Cambiamos el orden de la pantalla: Tabla arriba y Tarjeta debajo */
+    .layout-main {
+        display: flex !important;
+        flex-direction: column !important; /* Organización vertical */
+        gap: 15px !important;
+    }
+    
+    .zona-tabla {
+        order: 1 !important; /* Primer bloque visible */
+        width: 100% !important;
+    }
+    
+    #zona-nav {
+        order: 2 !important; /* Se desplaza abajo del todo, debajo de los partidos */
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-top: 20px !important;
+    }
+
+    /* 2. Configuración fija de la tabla para reparto exacto de espacio */
+    .table-responsive table {
+        width: 100% !important;
+        table-layout: fixed !important; /* Fuerza los anchos exactos en píxeles */
+        border-collapse: collapse !important;
+    }
+
+    .table-responsive th, 
+    .table-responsive td {
+        padding: 6px 2px !important;
+        font-size: 11px !important; /* Letra compacta para que entre todo el bloque */
+        text-align: center !important;
+    }
+
+    /* Columna 1: P (Número de partido) -> Ultra estrecha */
+    .table-responsive th:nth-child(1), .table-responsive td:nth-child(1) {
+        width: 18px !important;
+    }
+
+    /* Columnas 3, 4 y 5: Celdas de 1, X, 2 optimizadas para cuotas largas (5 caracteres como 11,25) */
+    .table-responsive th:nth-child(3), .table-responsive td:nth-child(3),
+    .table-responsive th:nth-child(4), .table-responsive td:nth-child(4),
+    .table-responsive th:nth-child(5), .table-responsive td:nth-child(5) {
+        width: 42px !important; /* Ancho idéntico fijo para que quepa la cuota sin saltos */
+        min-width: 42px !important;
+        max-width: 42px !important;
+        white-space: nowrap !important; /* Evita que el número se rompa en dos líneas */
+    }
+
+    /* Columna 2: EQUIPOS -> Le damos el máximo tamaño libre de la pantalla para el nombre */
+    .table-responsive th:nth-child(2), .table-responsive td:nth-child(2) {
+        width: auto !important; 
+        text-align: left !important;
+        padding-left: 4px !important;
+        font-weight: bold;
+        color: #e2e8f0;
+    }
+
+    /* Columnas del final: Controles de Pronóstico y Filtros (Base, Difícil, Pro, E8, 1X2) */
+    .table-responsive th:nth-child(6), .table-responsive td:nth-child(6),
+    .table-responsive th:nth-child(7), .table-responsive td:nth-child(7),
+    .table-responsive th:nth-child(8), .table-responsive td:nth-child(8),
+    .table-responsive th:nth-child(9), .table-responsive td:nth-child(9),
+    .table-responsive th:nth-child(10), .table-responsive td:nth-child(10) {
+        width: 38px !important; /* Estrechas para que los inputs queden bien recogidos */
+        min-width: 38px !important;
+    }
+
+    /* Ajuste milimétrico de los selectores e inputs dentro de la tabla */
+    .table-responsive td select, 
+    .table-responsive td input {
+        width: 100% !important;
+        max-width: 34px !important;
+        height: 26px !important;
+        font-size: 11px !important;
+        padding: 2px !important;
+        border-radius: 4px !important;
+        background: #0f172a !important;
+        color: #38bdf8 !important;
+        border: 1px solid #334155 !important;
+    }
+
+    /* 3. Ajuste de la tarjeta de apuestas inferior */
+    .panel-tarjeta {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .panel-tarjeta > div:first-child > div:last-child {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        gap: 6px !important;
+    }
+
+    .btn-nav {
+        flex: 1 !important;
+        height: 44px !important;
+        font-size: 13px !important;
+        font-weight: bold !important;
+    }
+
+    #cardBox {
+        width: 100% !important;
+        min-height: 360px !important;
+        box-sizing: border-box !important;
+        margin-top: 10px !important;
+        }
+
+    /* ORDEN RESPONSIVO: MUEVE LA TARJETA DE LA QUINIELA DEBAJO DE TODOS LOS PARTIDOS */
+    
+    /* 1. Forzamos al contenedor general a apilar los bloques verticalmente */
+    .layout-main {
+        display: flex !important;
+        flex-direction: column !important; /* Alineación de arriba a abajo */
+        gap: 20px !important;
+        width: 100% !important;
+    }
+    
+    /* 2. Colocamos la zona de la tabla de partidos en la primera posición */
+    .zona-tabla {
+        order: 1 !important; /* Se queda arriba del todo */
+        width: 100% !important;
+    }
+    
+    /* 3. Colocamos el div de la tarjeta de la quiniela en la segunda posición (abajo) */
+    #zona-nav {
+        order: 2 !important; /* Se desplaza obligatoriamente abajo de la tabla */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-top: 25px !important; /* Separación limpia con el final de los partidos */
+        box-sizing: border-box !important;
+    }
+
+    /* 4. Aseguramos que la tarjeta interna se estire al ancho completo de tu Android */
+    .panel-tarjeta {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Estilo para el cuadro de texto del número de página y los 4 botones de dirección */
+    .panel-tarjeta > div:first-child {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Fila horizontal perfecta para los botones de navegación (|<<, ANT, SIG, >>|) */
+    .panel-tarjeta > div:first-child > div:last-child {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Botones de navegación grandes y cómodos para tocar con el dedo en la parte inferior */
+    .btn-nav {
+        flex: 1 !important; /* Se dividen el espacio de la pantalla de forma exacta */
+        width: auto !important;
+        height: 46px !important; /* Altura táctil mejorada */
+        font-size: 13px !important;
+        font-weight: bold !important;
+        background: #334155 !important;
+        color: white !important;
+        border: 1px solid #475569 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* 6. El recuadro negro donde se leen las columnas generadas en tu quiniela */
+    #cardBox {
+        width: 100% !important;
+        min-height: 380px !important;
+        box-sizing: border-box !important;
+        padding: 15px !important;
+        margin-top: 15px !important;
+        background: #1a222d !important;
+        border: 1px solid #38bdf8 !important;
+        border-radius: 8px !important;
+    }
+
+    }
+
+
+
+
 </style>
 </head>
 <body>
