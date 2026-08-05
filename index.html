@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,7 +11,41 @@
 
     <title>Quiniela Original 2025-2026</title>
 <style>
-/* Contenedor horizontal ajustado */
+    /* estilo para usar en móviles*/
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 100%;
+    max-width: 600px; /* Se mantendrá centrado en PC */
+    margin: 20px auto;
+    padding: 15px; /* Evita que el contenido toque los bordes del móvil */
+    box-sizing: border-box;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px dashed #ccc;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%; /* Se adapta al ancho de la pantalla del Android */
+    box-sizing: border-box;
+}
+
+button {
+    display: block;
+    width: 100%; /* El botón ocupará todo el ancho disponible del móvil */
+    padding: 14px; /* Área de pulsación más grande para los dedos */
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+
+
+
+    /* Contenedor horizontal ajustado */
 .herramientas-unificadas {
     display: flex;
     gap: 10px; /* Reducimos el espacio entre cajas para que quepan mejor */
@@ -82,8 +118,7 @@
 
 
 
-        body { font-family: 'Segoe UI', sans-serif; background: #0f2a23; color: #f8fafc; padding: 10px; font-size: 12px; margin: 0; }
-       @media (max-width: 768px) {
+               @media (max-width: 768px) {
     /* Los botones del 0 al 8 en cuadrícula de 4x2 */
     .btns-f {
         display: grid !important;
