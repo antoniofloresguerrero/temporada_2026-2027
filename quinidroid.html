@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- MODO APP NATIVA: Oculta las barras del navegador en Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+
+    <title>Quinidroid App Independent</title>
+    <style>
+        /* DISEÑO DE INTERFAZ ESTILO QUINIDROID DARK */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0f19;
+            color: #f1f5f9;
+            margin: 0;
+            padding: 8px;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #131a26;
+            border-radius: 14px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        /* HEADER DE SELECCIÓN DE JORNADAS */
+        .header-panel {
+            background: #1c2536;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selector-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #131a26;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #2d3748;
+        }
+
+        .selector-box label { font-size: 11px; font-weight: bold; color: #38bdf8; letter-spacing: 1px; }
+        .selector-box select { background: transparent; color: white; border: none; font-size: 14px; font-weight: bold; outline: none; }
+        /* CONFIGURACIÓN DE LAS TARJETAS VERTICALES DE PARTIDOS */
+        .partidos-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .partido-card {
+            background: #1c2536;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #2d3748;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .partido-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #131a26;
+            padding-bottom: 8px;
+        }
+
+        .partido-id { background: #38bdf8; color: #000; font-weight: bold; font-size: 11px; padding: 3px 8px; border-radius: 4px; }
+        .partido-equipos { display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; text-align: center; }
+        
+        .btn-equipo-celeste {
+            background: #38bdf8;
+            color: #0b0f19;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            width: 42%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .marcador-marcado { color: #ffcc00; font-size: 16px; font-weight: bold; min-width: 45px; text-align: center; }
+
+        /* LINEA DE CONTROLES INFERIORES: PRONÓSTICOS DOBLES Y TRIPLES */
+        .partido-controles {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding-top: 6px;
+        }
+
+        .control-grupo { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; }
+        .control-grupo input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #38bdf8; }
+
+        .select-pronostico {
+            background: #0b0f19;
+            color: #38bdf8;
+            border: 2px solid #38bdf8;
+            border-radius: 6px;
+            padding: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            outline: none;
+            width: 68px;
+            text-align: center;
+        }
+
+        .input-resultado-real {
+            background: #0b0f19;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            border-radius: 6px;
+            padding: 6px;
+            width: 32px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* CONSOLA DE ESTADO INFERIOR */
+        #status-bar {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            background: #0b0f19;
+            color: #94a3b8;
+            border: 1px solid #1c2536;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- PANEL DE CONTROL SUPERIOR -->
+    <div class="header-panel">
+        <div class="selector-box">
+            <label>JORNADA LA LIGA</label>
+            <select id="selector-jornada" onchange="conectarConLaLigaEnDirecto()">
+                <option value="1">Jornada 1</option>
+                <option value="2">Jornada 2</option>
+                <option value="3">Jornada 3</option>
+                <option value="4">Jornada 4</option>
+            </select>
+        </div>
+        <div style="font-size: 11px; font-weight: bold; color: #10b981; text-transform: uppercase;">Directo API</div>
+   <div style="display: flex; gap: 10px; width: 100%; justify-content: space-between;">
+        <button class="btn-live" onclick="document.getElementById('inputColumnas').click()" style="background: #0ea5e9; flex: 1;">📂 CARGAR QUINIELA</button>
+        <button class="btn-live" onclick="calcularEscrutinioEnVivo()" style="background: #22d679; color: #0f172a; flex: 1;">📊 CALCULAR ESCRUTINIO</button>
+        <input type="file" id="inputColumnas" style="display: none;" onchange="procesarArchivoColumnas(event)" accept=".txt">
+    </div>
+
+    <!-- Navegación de Columnas Cargadas -->
+    <div id="panel-navegacion-columnas" style="display: none; width: 100%; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px; border-radius: 6px; border: 1px solid #334155;">
+        <button onclick="cambiarColumnaVisualizada(-1)" style="background: #334155; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;">< ANT</button>
+        <span id="info-columna-actual" style="font-size: 13px; font-weight: bold; color: #38bdf8;">Columna 1 de 1</span>
+        <button onclick="cambiarColumnaVisualizada(1)" style="background: #334155; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;">SIG ></button>
+    </div>
+
+
+<!-- PANEL RESUMEN DE ACIERTOS Y PREMIOS ESTILO QUINIDROID -->
+<div class="partido-card" id="panel-premios-escrutinio" style="display: none; background: #111827; border-color: #22d679; margin-bottom: 15px;">
+    <div style="font-weight: bold; color: #22d679; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #1e293b; padding-bottom: 6px; text-align: center;">🏆 RESUMEN DE ACIERTOS EN DIRECTO</div>
+    <div style="display: flex; justify-content: space-around; padding: 10px 0; text-align: center;">
+        <div><div style="font-size: 11px; color: #94a3b8;">MÁXIMO ACIERTO</div><div id="max-aciertos" style="font-size: 20px; font-weight: bold; color: #fbbf24;">0</div></div>
+        <div style="border-left: 1px solid #334155; padding-left: 15px;"><div style="font-size: 11px; color: #94a3b8;">COLUMNAS CON 10+</div><div id="columnas-premiadas" style="font-size: 20px; font-weight: bold; color: #38bdf8;">0</div></div>
+    </div>
+    <div id="detalle-desglose-premios" style="font-family: monospace; font-size: 12px; color: #cbd5e1; background: #0f172a; padding: 8px; border-radius: 6px; max-height: 120px; overflow-y: auto;"></div>
+</div>
+    <!-- Selector de Modo de Escrutinio -->
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; background: #0f172a; padding: 8px; border-radius: 6px;">
+        <span style="font-size: 12px; font-weight: bold; color: #fbbf24;">⚙️ MODO ESCRUTINIO:</span>
+        <select id="modo-escrutinio" onchange="conmutarModoTrabajo()" style="background: #1c2536; color: white; border: 1px solid #fbbf24; border-radius: 4px; padding: 4px 8px; font-weight: bold; font-size: 13px;">
+            <option value="directo">🟢 DIRECTO (Goles Reales)</option>
+            <option value="pruebas">🟡 PRUEBAS (Signos Manuales)</option>
+        </select>
+    </div>
+
+    <!-- Panel de Creación y Guardado de Columnas -->
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; background: #111827; padding: 10px; border-radius: 8px; border: 1px solid #334155;">
+        <span style="font-size: 12px; font-weight: bold; color: #38bdf8; text-align: center; display: block; border-bottom: 1px solid #2d3748; padding-bottom: 4px;">🛠️ CREAR Y GUARDAR QUINIELAS</span>
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+            <label style="font-size: 12px; color: #94a3b8;">Cantidad:</label>
+            <input type="number" id="num-crear-columnas" value="10" min="1" max="500" style="width: 60px; background: #0f172a; color: #38bdf8; border: 1px solid #38bdf8; padding: 4px; border-radius: 4px; text-align: center; font-weight: bold;">
+        </div>
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button class="btn-live" onclick="generarQuinielasAleatorias()" style="background: #a855f7; flex: 1;">🎲 CREAR</button>
+            <button class="btn-live" onclick="guardarQuinielasEnArchivo()" style="background: #f59e0b; color: black; flex: 1;">💾 GUARDAR .TXT</button>
+        </div>
+    </div>
+  </div>
+
+
+
+    <!-- CONTENEDOR DINÁMICO DE TARJETAS DE PARTIDOS -->
+    <div class="partidos-lista" id="contenedorPartidos"></div>
+
+    <!-- BARRA DE ESTADO DEL SISTEMA -->
+    <div id="status-bar">Conectando con Football-Data Engine...</div>
+</div>
+
+<script>
+
+// PARTE 2: VARIABLES DE ALMACENAMIENTO Y LECTOR DE COLUMNAS INTERNO
+var columnasCargadas = []; // Almacena todas las combinaciones leídas del .txt
+var indiceColumnaActual = 0; // Controla qué columna estás visualizando en la tarjeta
+
+// Función para abrir, leer y parsear el archivo .txt de tu quiniela
+function procesarArchivoColumnas(evento) {
+    var archivo = evento.target.files[0];
+    if (!archivo) return;
+
+    var lector = new FileReader();
+    lector.onload = function(e) {
+        var contenido = e.target.result;
+        var lineas = contenido.split(/\r?\n/);
+        columnasCargadas = []; // Limpiamos cargas previas
+
+        lineas.forEach(function(linea) {
+            // Limpiamos espacios y filtramos líneas vacías o de texto que no sean signos
+            var lineaLimpia = linea.trim().toUpperCase();
+            // Validamos que contenga caracteres oficiales de la quiniela (1, X, 2)
+            if (lineaLimpia.length >= 14 && /^[1X2\s-]+$/.test(lineaLimpia)) {
+                columnasCargadas.push(lineaLimpia);
+            }
+        });
+
+        var statusBar = document.getElementById('status-bar');
+        var panelNav = document.getElementById('panel-navegacion-columnas');
+
+        if (columnasCargadas.length > 0) {
+            indiceColumnaActual = 0;
+            if (panelNav) panelNav.style.display = "flex"; // Mostramos los botones ANT y SIG
+            
+            if (statusBar) {
+                statusBar.innerText = "📂 ¡Se han cargado " + columnasCargadas.length + " columnas con éxito!";
+                statusBar.style.color = "#4ade80";
+            }
+            // Pintamos la primera columna leída en los selectores azules de las tarjetas
+            aplicarColumnaEnPantalla(0);
+        } else {
+            if (panelNav) panelNav.style.display = "none";
+            if (statusBar) {
+                statusBar.innerText = "⚠️ El archivo no contiene columnas con formato válido (1X2).";
+                statusBar.style.color = "#f87171";
+            }
+        }
+    };
+    lector.readAsText(archivo);
+}
+
+// Función encargada de volcar los signos de la columna elegida sobre tus selectores visuales
+function aplicarColumnaEnPantalla(indice) {
+    if (columnasCargadas.length === 0 || !columnasCargadas[indice]) return;
+    
+    var columna = columnasCargadas[indice];
+    var selectores = document.querySelectorAll('.select-pronostico');
+    
+    // Recorremos los 14 selectores de pronóstico inyectando el signo correspondiente
+    selectores.forEach(function(selector, idx) {
+        if (idx < 14 && columna[idx]) {
+            var signo = columna[idx];
+            // Control de seguridad por si el archivo usa guiones o caracteres alternos para el empate
+            if (signo === "-") signo = "X";
+            selector.value = signo;
+        }
+    });
+
+    // Actualizamos el contador flotante del menú de navegación (ejemplo: Columna 3 de 120)
+    var infoTxt = document.getElementById('info-columna-actual');
+    if (infoTxt) {
+        infoTxt.innerText = "Columna " + (indice + 1) + " de " + columnasCargadas.length;
+    }
+}
+
+// Control táctil para pasar de boleto pulsando ANT o SIG en la botonera móvil
+function cambiarColumnaVisualizada(direccion) {
+    if (columnasCargadas.length === 0) return;
+    
+    indiceColumnaActual += direccion;
+    
+    // Control de límites cíclico: si pasa del final vuelve al principio y viceversa
+    if (indiceColumnaActual >= columnasCargadas.length) indiceColumnaActual = 0;
+    if (indiceColumnaActual < 0) indiceColumnaActual = columnasCargadas.length - 1;
+    
+    aplicarColumnaEnPantalla(indiceColumnaActual);
+}
+
+
+
+    // CONFIGURACIÓN DE ACCESO SEGURO A LA API INTERNACIONAL DE FÚTBOL
+    // Regístrate gratis en football-data.org para obtener tu token propio si lo deseas
+    const API_TOKEN = '	c05a71ff4eb748fe9c8f31277d35c8a5'; 
+    const COMPETICION_LIGA = 'PD'; // Primera División de España
+    let marcadorMemoria = {};
+    let bucleSincronizacion = null;
+
+    // AUDIO NATIVO SÍNCRONO: Genera un pitido electrónico de silbato de árbitro sin archivos externos
+    function reproducirSilbatoArbitro() {
+        if (!window.AudioContext && !window.webkitAudioContext) return;
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Primer pitido corto
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(1200, ctx.currentTime);
+        gain1.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(); osc1.stop(ctx.currentTime + 0.15);
+
+        // Segundo pitido largo de gol (a los 0.2 segundos)
+        setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(1300, ctx.currentTime);
+            gain2.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(); osc2.stop(ctx.currentTime + 0.6);
+        }, 200);
+    }
+
+    // AL CARGAR LA APP: Arrancamos el motor de forma automática
+    document.addEventListener("DOMContentLoaded", () => {
+        conectarConLaLigaEnDirecto();
+    });
+    // MOTOR EN DIRECTO CON CALENDARIO DE RESERVA LOCAL INTEGRADO ANTI-FALLOS
+    async function conectarConLaLigaEnDirecto() {
+        const status = document.getElementById('status-bar');
+        const contenedor = document.getElementById('contenedorPartidos');
+        const jornadaSel = document.getElementById('selector-jornada').value || "1";
+
+        if (status) {
+            status.innerText = "Sincronizando con los servidores oficiales de LaLiga...";
+            status.style.color = "#fbbf24";
+        }
+
+        // CALENDARIO DE RESPALDO (Temporada 2026-2027)
+        const calendarioLocalReserva = {
+            "1": [
+                { id: 1, local: "Athletic Club", visitante: "Getafe CF" },
+                { id: 2, local: "Real Betis", visitante: "Girona FC" },
+                { id: 3, local: "Mallorca", visitante: "Real Madrid" },
+                { id: 4, local: "Las Palmas", visitante: "Sevilla FC" },
+                { id: 5, local: "Villarreal CF", visitante: "Atlético Madrid" },
+                { id: 6, local: "Valencia CF", visitante: "FC Barcelona" },
+                { id: 7, local: "Real Sociedad", visitante: "Rayo Vallecano" },
+                { id: 8, local: "Celta de Vigo", visitante: "Alavés" },
+                { id: 9, local: "Racing Santander", visitante: "Almería" },
+                { id: 10, local: "Burgos CF", visitante: "Cartagena" },
+                { id: 11, local: "Sporting Gijón", visitante: "Levante UD" },
+                { id: 12, local: "CD Mirandés", visitante: "Córdoba CF" },
+                { id: 13, local: "Cádiz CF", visitante: "Real Zaragoza" },
+                { id: 14, local: "Real Oviedo", visitante: "Deportivo" }
+            ],
+            "2": [
+                { id: 1, local: "FC Barcelona", visitante: "Athletic Club" },
+                { id: 2, local: "Real Madrid", visitante: "Real Valladolid" },
+                { id: 3, local: "Atlético Madrid", visitante: "Girona FC" },
+                { id: 4, local: "Getafe CF", visitante: "Rayo Vallecano" },
+                { id: 5, local: "Celta de Vigo", visitante: "Valencia CF" },
+                { id: 6, local: "CA Osasuna", visitante: "Mallorca" },
+                { id: 7, local: "Deportivo Alavés", visitante: "Real Betis" },
+                { id: 8, local: "Sevilla FC", visitante: "Villarreal CF" },
+                { id: 9, local: "Racing Ferrol", visitante: "Granada CF" },
+                { id: 10, local: "Albacete", visitante: "Elche CF" },
+                { id: 11, local: "Castellón", visitante: "Real Oviedo" },
+                { id: 12, local: "Málaga CF", visitante: "CD Mirandés" },
+                { id: 13, local: "CD Tenerife", visitante: "Almería" },
+                { id: 14, local: "SD Eibar", visitante: "Levante UD" }
+            ]
+        };
+
+        try {
+            // CORRECCIÓN TOTAL DE LA URL: Texto plano continuo con barra intermedia obligatoria
+            var urlOriginal = "https://football-data.org" + jornadaSel;
+            var urlApi = "https://allorigins.win" + encodeURIComponent(urlOriginal);
+            
+            const respuesta = await fetch(urlApi);
+            if (!respuesta.ok) throw new Error("API Ocupada");
+            
+            const contenedorProxy = await respuesta.json();
+            if (!contenedorProxy.contents) throw new Error("Contenido vacío");
+            
+            const datos = JSON.parse(contenedorProxy.contents);
+
+            if (datos && datos.matches && datos.matches.length > 0) {
+                renderizarPartidosMóvil(datos.matches, true);
+                if (status) {
+                    status.innerText = "🟢 Conectado en Vivo a LaLiga - Sincronización Online";
+                    status.style.color = "#4ade80";
+                }
+            } else {
+                throw new Error("Estructura incorrecta");
+            }
+
+        } catch (error) {
+            console.log("Activando calendario de reserva local seguro contra fallos CORS...");
+            const partidosReserva = calendarioLocalReserva[jornadaSel] || calendarioLocalReserva["1"];
+            renderizarPartidosMóvil(partidosReserva, false);
+            
+            if (status) {
+                status.innerText = "🟢 Modo Local Activo - Jornada " + jornadaSel + " cargada (Sin Internet)";
+                status.style.color = "#38bdf8";
+            }
+        }
+
+        // BUCLE: Consulta automática cada 60 segundos
+        if (bucleSincronizacion) clearInterval(bucleSincronizacion);
+        bucleSincronizacion = setInterval(function() {
+            conectarConLaLigaEnDirecto();
+        }, 60000);
+    }
+
+    // FUNCIÓN DE RENDERIZADO AISLADO: Evita que tus datos se borren al recibir actualizaciones
+    function renderizarPartidosMóvil(listaPartidos, esOnline) {
+        const contenedor = document.getElementById('contenedorPartidos');
+        if (!contenedor) return;
+
+        const filasExistentes = contenedor.querySelectorAll('.partido-card');
+        var opcionesPronostico = 
+            '<select class="select-pronostico">' +
+                '<option value="-">-</option><option value="1">1</option><option value="X">X</option><option value="2">2</option>' +
+                '<option value="1X">1X</option><option value="12">12</option><option value="X2">X2</option><option value="1X2">1X2</option>' +
+            '</select>';
+
+        if (filasExistentes.length === 0) {
+            listaPartidos.slice(0, 14).forEach((partido, index) => {
+                const num = index + 1;
+                var local = esOnline ? (partido.homeTeam.shortName || partido.homeTeam.name) : partido.local;
+                var visitante = esOnline ? (partido.awayTeam.shortName || partido.awayTeam.name) : partido.visitante;
+                
+                var gl = esOnline && partido.score.fullTime.home !== null ? partido.score.fullTime.home : "-";
+                var gv = esOnline && partido.score.fullTime.away !== null ? partido.score.fullTime.away : "-";
+                
+                marcadorMemoria[num] = gl + "-" + gv;
+
+                const card = document.createElement('div');
+                card.className = "partido-card";
+                card.innerHTML = `
+                    <div class="partido-info">
+                        <span class="partido-id">P${num}</span>
+                        <div class="partido-equipos">
+                            <button class="btn-equipo-celeste">${local}</button>
+                            <b class="marcador-marcado" id="goles-${num}">${gl} : ${gv}</b>
+                            <button class="btn-equipo-celeste">${visitante}</button>
+                        </div>
+                    </div>
+                    <div class="partido-controles">
+                        <div class="control-grupo"><input type="checkbox"><span>E8</span></div>
+                        <div class="control-grupo"><input type="checkbox"><span>B</span></div>
+                        <div class="control-grupo"><input type="checkbox"><span>D</span></div>
+                        <div>${opcionesPronostico}</div>
+                        <div><input type="text" class="input-resultado-real" id="signo-${num}" value="${gl==='-'?'':(gl>gv?'1':(gl<gv?'2':'X'))}" readonly></div>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        } else if (esOnline) {
+            listaPartidos.slice(0, 14).forEach((partido, index) => {
+                const num = index + 1;
+                var gl = partido.score.fullTime.home !== null ? partido.score.fullTime.home : "-";
+                var gv = partido.score.fullTime.away !== null ? partido.score.fullTime.away : "-";
+                var marcadorActual = gl + "-" + gv;
+
+                if (gl !== "-" && marcadorMemoria[num] && marcadorMemoria[num] !== marcadorActual) {
+                    reproducirSilbatoArbitro();
+                    if (navigator.vibrate) navigator.vibrate(200);
+
+                    const bGoles = document.getElementById("goles-" + num);
+                    if (bGoles) bGoles.innerText = gl + " : " + gv;
+
+                    const inputSigno = document.getElementById("signo-" + num);
+                    if (inputSigno) inputSigno.value = gl > gv ? '1' : (gl < gv ? '2' : 'X');
+                }
+                marcadorMemoria[num] = marcadorActual;
+            });
+        }
+    }
+
+// PARTE 3: MOTOR DE ESCRUTINIO EN TIEMPO REAL (ESTILO QUINNIDROID)
+function calcularEscrutinioEnVivo() {
+    var panelPremios = document.getElementById('panel-premios-escrutinio');
+    var txtMaxAciertos = document.getElementById('max-aciertos');
+    var txtColumnasPremiadas = document.getElementById('columnas-premiadas');
+    var txtDesglose = document.getElementById('detalle-desglose-premios');
+    var statusBar = document.getElementById('status-bar');
+
+    if (columnasCargadas.length === 0) {
+        if (statusBar) {
+            statusBar.innerText = "⚠️ Primero debes cargar un archivo .txt con tus columnas.";
+            statusBar.style.color = "#f87171";
+        }
+        return;
+    }
+
+    // 1. Extraemos la combinación ganadora real actual directa de las casillas de la tabla
+    var combinacionGanadoraReal = [];
+    for (var i = 1; i <= 14; i++) {
+        var inputSigno = document.getElementById("signo-" + i);
+        if (inputSigno) {
+            var signoReal = inputSigno.value.trim().toUpperCase();
+            // Si el partido no ha terminado o está vacío, asumimos un signo provisional por defecto
+            if (signoReal === "" || signoReal === "-") signoReal = "X";
+            combinacionGanadoraReal.push(signoReal);
+        } else {
+            combinacionGanadoraReal.push("X");
+        }
+    }
+
+    // Variables de control de premios
+    var maximoAciertoDetectado = 0;
+    var totalColumnasConPremio = 0;
+    
+    // Contadores para el desglose de categorías
+    var recuentoCategorias = { "14": 0, "13": 0, "12": 0, "11": 0, "10": 0 };
+
+    // 2. Evaluamos de golpe todas las columnas cargadas en la memoria
+    columnasCargadas.forEach(function(columna) {
+        var aciertosDeEstaColumna = 0;
+
+        for (var j = 0; j < 14; j++) {
+            var signoApuesta = columna[j];
+            var signoRealPartido = combinacionGanadoraReal[j];
+
+            // Comprobamos si el signo de tu archivo coincide con el del directo
+            if (signoApuesta === signoRealPartido) {
+                aciertosDeEstaColumna++;
+            }
+        }
+
+        // Registramos el acierto máximo de tu peña o boleto
+        if (aciertosDeEstaColumna > maximoAciertoDetectado) {
+            maximoAciertoDetectado = aciertosDeEstaColumna;
+        }
+
+        // Si tiene 10 o más aciertos, entra en zona de premios de La Quiniela
+        if (aciertosDeEstaColumna >= 10) {
+            totalColumnasConPremio++;
+            recuentoCategorias[aciertosDeEstaColumna.toString()]++;
+        }
+    });
+
+    // 3. Renderizamos los resultados financieros y de aciertos en la interfaz del móvil
+    if (panelPremios) panelPremios.style.display = "block"; // Mostramos el panel de resumen
+    if (txtMaxAciertos) txtMaxAciertos.innerText = maximoAciertoDetectado;
+    if (txtColumnasPremiadas) txtColumnasPremiadas.innerText = totalColumnasConPremio;
+
+    // Construimos el bloque de texto con el desglose limpio de arrastrar
+    if (txtDesglose) {
+        txtDesglose.innerHTML = 
+            '<div style="color: #fbbf24;">• Columnas con 14 aciertos: <b>' + recuentoCategorias["14"] + '</b></div>' +
+            '<div style="color: #a855f7;">• Columnas con 13 aciertos: <b>' + recuentoCategorias["13"] + '</b></div>' +
+            '<div style="color: #38bdf8;">• Columnas con 12 aciertos: <b>' + recuentoCategorias["12"] + '</b></div>' +
+            '<div style="color: #f87171;">• Columnas con 11 aciertos: <b>' + recuentoCategorias["11"] + '</b></div>' +
+            '<div style="color: #4ade80;">• Columnas con 10 aciertos: <b>' + recuentoCategorias["10"] + '</b></div>';
+    }
+
+    if (statusBar) {
+        statusBar.innerText = "📊 ¡Escrutinio completado en tiempo real para las " + columnasCargadas.length + " apuestas!";
+        statusBar.style.color = "#22d679";
+    }
+}
+
+// PARTE 2: GESTIÓN DE MODOS DE ESCRUTINIO Y GENERADOR DE COLUMNAS
+function conmutarModoTrabajo() {
+    var modo = document.getElementById('modo-escrutinio').value;
+    var inputsSigno = document.querySelectorAll('.input-resultado-real');
+    var statusBar = document.getElementById('status-bar');
+
+    inputsSigno.forEach(function(input) {
+        if (modo === "pruebas") {
+            // Modo pruebas: Permitimos al usuario editar los signos con el dedo en su Android
+            input.readOnly = false;
+            input.style.borderColor = "#fbbf24"; // Color amarillo indicativo
+            input.style.color = "#fbbf24";
+            input.style.cursor = "text";
+            // Si estaba vacío, le ponemos un guion inicial para rellenar
+            if (input.value === "") input.value = "-";
+        } else {
+            // Modo directo: Bloqueamos las casillas para que solo mande el directo de LaLiga
+            input.readOnly = true;
+            input.style.borderColor = "#ef4444"; // Volvemos al rojo clásico
+            input.style.color = "#ef4444";
+            input.style.cursor = "default";
+            // Forzamos sincronización inmediata para restaurar los goles de la API
+            var jornadaSel = document.getElementById('selector-jornada').value || "1";
+            conectarConLaLigaEnDirecto();
+        }
+    });
+
+    if (statusBar) {
+        if (modo === "pruebas") {
+            statusBar.innerText = "🟡 Modo Pruebas Activo: Escribe los signos a mano en la última columna.";
+            statusBar.style.color = "#fbbf24";
+        } else {
+            statusBar.innerText = "🟢 Modo Directo Activo: Mandan los marcadores reales de LaLiga.";
+            statusBar.style.color = "#4ade80";
+        }
+    }
+}
+
+// Generador masivo de combinaciones de quiniela (1X2) estilo Quinnidroid
+function generarQuinielasAleatorias() {
+    var cantidadInput = document.getElementById('num-crear-columnas').value;
+    var cantidad = parseInt(cantidadInput) || 10;
+    var statusBar = document.getElementById('status-bar');
+    var panelNav = document.getElementById('panel-navegacion-columnas');
+
+    // Control de límites para no colgar la memoria del móvil
+    if (cantidad > 500) cantidad = 500;
+    if (cantidad < 1) cantidad = 1;
+
+    columnasCargadas = []; // Reseteamos cargas anteriores
+    var signosPosibles = ["1", "X", "2"];
+
+    // Bucle para generar cada fila del archivo de forma matemática
+    for (var i = 0; i < cantidad; i++) {
+        var nuevaColumna = "";
+        for (var j = 0; j < 14; j++) {
+            // Elige un signo al azar con la misma probabilidad
+            var indiceAzar = Math.floor(Math.random() * 3);
+            nuevaColumna += signosPosibles[indiceAzar];
+        }
+        columnasCargadas.push(nuevaColumna);
+    }
+
+    if (columnasCargadas.length > 0) {
+        indiceColumnaActual = 0;
+        if (panelNav) panelNav.style.display = "flex"; // Activamos los botones ANT y SIG
+        
+        if (statusBar) {
+            statusBar.innerText = "🎲 ¡Se han generado " + columnasCargadas.length + " columnas aleatorias con éxito!";
+            statusBar.style.color = "#a855f7";
+        }
+        // Volcamos la primera combinación generada en los selectores visuales de la app
+        aplicarColumnaEnPantalla(0);
+    }
+}
+// PARTE 3: MOTOR DE DESCARGA DE ARCHIVOS .TXT NATIVO PARA ANDROID
+function guardarQuinielasEnArchivo() {
+    var statusBar = document.getElementById('status-bar');
+
+    if (columnasCargadas.length === 0) {
+        if (statusBar) {
+            statusBar.innerText = "⚠️ No hay columnas generadas en la memoria para poder guardar.";
+            statusBar.style.color = "#f87171";
+        }
+        return;
+    }
+
+    // Unimos todas las columnas en líneas independientes separadas por saltos de línea estándar
+    var textoFinalFichero = columnasCargadas.join("\r\n");
+
+    // Creamos un contenedor de tipo Blob con codificación de texto plano puro
+    var blobTexto = new Blob([textoFinalFichero], { type: "text/plain;charset=utf-8" });
+    
+    // Generamos un enlace de descarga invisible en la memoria del navegador móvil
+    var enlaceDescarga = document.createElement("a");
+    
+    // Asignamos un nombre oficial al fichero usando la fecha actual de 2026 de forma automática
+    var fechaHoy = new Date();
+    var nombreFichero = "Quiniela_Generada_" + fechaHoy.getDate() + "_" + (fechaHoy.getMonth() + 1) + ".txt";
+    
+    // Enlazamos el contenido del Blob al disparador de descarga
+    enlaceDescarga.href = URL.createObjectURL(blobTexto);
+    enlaceDescarga.download = nombreFichero;
+    
+    // Forzamos el click de forma invisible para que Android lance la alerta de guardado en el sistema
+    document.body.appendChild(enlaceDescarga);
+    enlaceDescarga.click();
+    
+    // Limpiamos los elementos temporales de la memoria para que el navegador no se sature
+    document.body.removeChild(enlaceDescarga);
+
+    if (statusBar) {
+        statusBar.innerText = "💾 ¡Guardado! Fichero '" + nombreFichero + "' descargado en tu móvil.";
+        statusBar.style.color = "#f59e0b";
+    }
+}
+
+
+</script>
+</body>
+</html>
+
+

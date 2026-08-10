@@ -7,935 +7,486 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
 
-    <title>Quiniela Original 2026-2027</title>
+    <title>Quiniela Original 2025-2026</title>
 <style>
-    /* Estilos globales y adaptabilidad total para Android y PC */
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        width: 100%;
-        max-width: 1500px;
-        margin: 0 auto;
-        padding: 10px;
-        box-sizing: border-box;
-        background: #0f172a;
-        color: white;
+/* Contenedor horizontal ajustado */
+.herramientas-unificadas {
+    display: flex;
+    gap: 10px; /* Reducimos el espacio entre cajas para que quepan mejor */
+    flex-wrap: nowrap; /* Forzamos que intenten estar en una fila */
+    overflow-x: auto; /* Si la pantalla es muy pequeña, sale scroll en lugar de romperse */
+    padding: 10px;
+    background: #0f172a;
+}
+
+/* Tarjeta base */
+.filtro-card {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #334155;
+    border-bottom: 4px solid #38bdf8;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Cajas de FILTROS (Anchas) */
+.filtro-card:nth-child(1), 
+.filtro-card:nth-child(2), 
+.filtro-card:nth-child(3) {
+    flex: 2; /* Tienen más prioridad de ancho */
+    min-width: 120px;
+}
+
+/* Cajas de DATOS (Estrechas: Escrutinio y Garantías) */
+.filtro-card:nth-child(4), 
+.filtro-card:nth-child(5) {
+    flex: 1; /* Son más estrechas */
+    min-width: 140px; /* Ancho mínimo reducido */
+}
+
+.filtro-card h3, .filtro-card h4 {
+    color: #38bdf8;
+    margin: 0 0 10px 0;
+    font-size: 0.85em; /* Título un poco más pequeño para ahorrar espacio */
+    text-transform: uppercase;
+}
+
+.fila-e, .linea-card {
+    font-size: 0.8em; /* Texto de datos más compacto */
+    padding: 4px 0;
+}
+
+
+
+
+/* Estilo para los botones dentro de las tarjetas */
+.btn-f {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-f.active {
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: bold;
+    box-shadow: 0 0 10px #38bdf8;
+}
+
+
+
+
+
+
+        body { font-family: 'Segoe UI', sans-serif; background: #0f2a23; color: #f8fafc; padding: 10px; font-size: 12px; margin: 0; }
+       @media (max-width: 768px) {
+    /* Los botones del 0 al 8 en cuadrícula de 4x2 */
+    .btns-f {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
     }
 
-    .container { 
-        width: 100%; 
-        margin: auto; 
-        background: #1e293b; 
-        padding: 15px; 
-        border-radius: 12px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
-        box-sizing: border-box;
-    }
-
-    /* Panel superior fluido: evita que los selectores y botones se corten */
-    .panel-control { 
-        background: #0f172a; 
-        padding: 15px; 
-        border-radius: 10px; 
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        align-items: center; 
-        gap: 10px; 
-        margin-bottom: 20px; 
-        border: 1px solid #334155; 
-    }
-
-    .panel-control > div {
-        flex: 1 1 auto;
-        min-width: 140px;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    /* Botones principales responsivos */
-    .btn-main, .btn-azul { 
-        padding: 10px 14px; 
-        font-weight: bold; 
-        border-radius: 6px; 
-        cursor: pointer; 
-        border: none; 
-        text-transform: uppercase; 
-        font-size: 11px; 
-        transition: 0.3s;
-        flex: 1 1 auto;
-        min-width: 110px;
-        text-align: center;
+    .btn-f {
+        width: 75% !important;
+        height: 40px !important;
+        font-size: 10px !important;
     }
     
-    .btn-quin { background: #38bdf8; color: #000; }
-    .btn-quin:hover { background-color: #0ee932; }
-    
-    .btn-azul {
-        background-color: #f88238; 
-        color: #000;               
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .btn-azul:hover { background-color: #0ee932; }
-
-    /* Contenedor unificado de filtros y escrutinios */
-    .herramientas-unificadas { 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 15px; 
-        margin-bottom: 20px; 
-        width: 100%;
-    }
-
-    /* Tarjetas de filtros fluidas */
-    .filtro-card { 
-        background: #334155; 
-        padding: 15px; 
-        border-radius: 10px; 
-        flex: 1 1 280px; 
-        border-bottom: 4px solid #38bdf8; 
-        box-sizing: border-box;
+    /* El Card azul con letra más grande para leer bien los partidos */
+    .linea-card {
+        padding: 10px 0;
+        font-size: 13px;
     }
     
-    .filtro-card h3, .filtro-card h4 { 
-        color: #38bdf8; 
-        margin: 0 0 12px 0; 
-        font-size: 12px; 
-        text-transform: uppercase;
-    }
-
-    /* Evitar que el zoom automático de Android moleste al escribir */
+    /* Evitar que el zoom automático de iPhone moleste al escribir */
     input, select {
         font-size: 16px !important;
     }
-    /* Botones de números pequeños (0-8) */
-    .btns-f { 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 4px; 
-        margin: 5px 0; 
-    }
-    
-    .btn-f { 
-        width: 32px; 
-        height: 32px; 
-        background: #1a222d; 
-        color: white; 
-        border: 1px solid #3d4b5f; 
-        cursor: pointer; 
-        font-size: 12px; 
-        border-radius: 4px; 
-        flex: 0 0 auto;
-        transition: 0.2s;
-    }
-    
-    .btn-f.active { background: #38bdf8; color: #000; font-weight: bold; box-shadow: 0 0 8px #38bdf8; }
-
-    /* Forzar filas sin salto interno de botones en pantallas medianas */
-    [id^="btns-"] {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 4px !important;
-        justify-content: flex-start;
-    }
-
-    /* Líneas de datos y escrutinio */
-    .fila-e, .linea-card { 
-        display: flex; 
-        justify-content: space-between; 
-        padding: 6px 0; 
-        border-bottom: 1px solid #2d3848; 
-        font-size: 13px;
-    }
-
-    /* Estructura de Distribución de la Pantalla Principal */
-    .layout-main { 
-        display: grid; 
-        grid-template-columns: 1fr 340px; 
-        gap: 20px; 
-        align-items: start; 
-        width: 100%;
-    }
-    /* Contenedor táctil para evitar que la tabla rompa la pantalla */
-    .table-responsive {
-        width: 100%;
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
-        background: #0f172a;
-        border-radius: 8px;
-        border: 1px solid #334155;
-    }
-
-    table { width: 100%; border-collapse: collapse; background: #0f172a; min-width: 600px; }
-    th { background: #1e293b; color: #38bdf8; padding: 12px 8px; border: 1px solid #334155; font-size: 13px; }
-    td { padding: 8px 6px; border: 1px solid #334155; text-align: center; }
-    
-    .in-equipo, .in-cuota, .in-pro, .in-res-real { 
-        background: #38bdf8; border: 1px solid white; color: #fff; border-radius: 8px; padding: 6px; text-align: center; outline: none; 
-    }
-    .in-pro { width: 50px; font-weight: bold; background: #000; color: #38bdf8; border: 2px solid #38bdf8; }
-    .in-res-real { width: 45px; border: 1px solid #ffcc00; color: #ffcc00; font-weight: bold; }
-
-    #cardBox { background: #1a222d; color:#38bdf8; padding: 15px; border-radius: 8px; min-height: 400px; border: 1px solid #38bdf8; font-family: monospace; }
-    .btn-nav { flex: 1; padding: 8px; font-size: 11px; background: #334155; color: white; border: 1px solid #475569; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .panel-tarjeta { width: 100% !important; max-width: 450px; box-sizing: border-box; }
-    #zona-nav { flex-wrap: wrap; }
-
-    /* Reglas especiales para pantallas de móviles Android */
-    @media (max-width: 768px) {
-        .layout-main { grid-template-columns: 1fr; }
-        .container { padding: 10px; }
-        .filtro-card { flex: 1 1 100%; }
-        #zona-nav { position: sticky; bottom: 0; background: #1e293b; padding: 10px; border-top: 2px solid #38bdf8; z-index: 100; }
-        .btn-f { width: 36px !important; height: 36px !important; font-size: 13px !important; }
-    }
-
-
-/* PARTE 1: Corrección de Filtros 1ª y 2ª DIV para Móviles */
-@media (max-width: 768px) {
-    /* Forzamos que los contenedores de filtros ocupen todo el ancho y muestren sus botones */
-    .herramientas-unificadas {
-        display: flex;
-        flex-direction: column; /* Se colocan uno debajo de otro */
-        gap: 15px;
-        width: 100%;
-    }
-
-    .filtro-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        display: block !important; /* Evita que se oculten o colapsen */
-        padding: 12px !important;
-        box-sizing: border-box;
-    }
-
-    /* Distribución de los botones numéricos del 0 al 8 en los filtros de división */
-    .btns-f {
-        display: grid !important;
-        grid-template-columns: repeat(5, 1fr) !important; /* Cuadrícula limpia de 5 columnas */
-        gap: 6px !important;
-        margin-bottom: 12px;
-        width: 100% !important;
-    }
-
-    /* Hacemos los botones un poco más grandes para que quepan bien los dedos */
-    .btn-f {
-        width: 100% !important;
-        height: 38px !important;
-        font-size: 13px !important;
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Ajuste para las etiquetas de texto al lado de los botones */
-    .grupo-f {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-        margin-bottom: 10px;
-        width: 100%;
-    }
-    
-    .grupo-f::before {
-        content: attr(data-label);
-        color: #38bdf8;
-        font-weight: bold;
-        font-size: 0.85em;
-    }
 }
-/* PARTE 2: Transformación de Tabla Gigante a Tarjetas para Móvil */
-@media (max-width: 768px) {
-    /* Ocultamos las cabeceras rígidas de la tabla tradicional */
-    table, thead, tbody, th, td, tr { 
-        display: block !important; 
-        width: 100% !important;
-        box-sizing: border-box;
-    }
-    
-    th { display: none !important; } /* Ya no necesitamos los títulos de arriba */
-    
-    /* Cada fila de partido se convierte en una tarjeta independiente */
-    #cuerpoTabla tr {
-        background: #1a222d !important;
-        margin-bottom: 15px !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        border: 1px solid #334155 !important;
-        height: auto !important; /* Altura libre según el contenido */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    /* Diseño interno de la tarjeta del partido */
-    td {
-        text-align: left !important;
-        padding: 6px 0 !important;
-        border: none !important;
-        display: flex !important;
-        align-items: center;
-        justify-content: space-between; /* Texto a la izquierda, controles a la derecha */
-        gap: 10px;
-    }
-
-    /* Resaltamos el nombre de los equipos en la parte superior de la tarjeta */
-    td:nth-of-type(2) {
-        font-weight: bold;
-        color: #38bdf8;
-        font-size: 15px;
-        border-bottom: 1px solid #334155 !important;
-        padding-bottom: 8px !important;
-        margin-bottom: 6px;
-        display: block !important; /* Ocupa toda la línea superior */
-    }
-    td:nth-of-type(2)::before { content: "Partido: "; color: #94a3b8; font-size: 12px; }
-
-    /* Añadimos etiquetas explicativas antes de cada casilla interactiva */
-    td:nth-of-type(1)::before { content: "Número de Partido:"; color: #94a3b8; }
-    td:nth-of-type(3)::before { content: "Signo 1 (Cuota / %):"; color: #94a3b8; }
-    td:nth-of-type(4)::before { content: "Signo X (Cuota / %):"; color: #94a3b8; }
-    td:nth-of-type(5)::before { content: "Signo 2 (Cuota / %):"; color: #94a3b8; }
-    td:nth-of-type(6)::before { content: "Casilla Base:"; color: #94a3b8; }
-    td:nth-of-type(7)::before { content: "Casilla Difícil:"; color: #94a3b8; }
-    td:nth-of-type(8)::before { content: "Pronóstico Final:"; color: #94a3b8; }
-    td:nth-of-type(9)::before { content: "Participa Elige 8:"; color: #94a3b8; }
-    td:nth-of-type(10)::before { content: "Resultado Real (1X2):"; color: #94a3b8; }
-
-    /* Forzamos que los inputs, selectores y casillas no se deformen en el lateral derecho */
-    .in-pro, .in-res-real, td select, td input {
-        width: auto !important;
-        min-width: 65px !important;
-        height: 36px !important;
-        margin: 0 !important;
-    }
+/* Fuerza a que los botones de filtros no salten de línea */
+[id^="btns-"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 2px !important; /* Espacio mínimo entre botones */
+    width: 100%;
 }
 
-/* CORRECCIÓN INTEGRAL PARA MÓVILES REALES (Sustituye los parches anteriores) */
-@media (max-width: 768px) {
-    /* 1. Forzar que los bloques de filtros no oculten nada */
-    .herramientas-unificadas {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 15px !important;
-        width: 100% !important;
-    }
-
-    .filtro-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        display: block !important;
-        height: auto !important;
-    }
-
-    /* 2. ARREGLO DE LOS BOTONES 0 AL 8: Evita que se estiren en líneas gigantes */
-    #btns-e8b, #btns-e8d, .btns-f, [id^="btns-"] {
-        display: flex !important;
-        flex-direction: row !important; /* Forzamos que se coloquen de lado a lado */
-        flex-wrap: wrap !important;     /* Si no caben en una línea, bajan a la siguiente */
-        gap: 6px !important;
-        width: 100% !important;
-        justify-content: flex-start !important;
-        padding: 5px 0 !important;
-    }
-
-    /* Fijamos un tamaño cuadrado idéntico para que no se deformen en Android */
-    #btns-e8b .btn-f, #btns-e8d .btn-f, .btns-f .btn-f, .btn-f {
-        flex: 0 0 auto !important;
-        width: 36px !important;  /* Tamaño perfecto para tocar con el dedo */
-        height: 36px !important;
-        font-size: 13px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* 3. ARREGLO DE LA TARJETA DE EQUIPOS: Mantiene el texto e inputs alineados */
-    table, thead, tbody, th, td, tr { 
-        display: block !important; 
-        width: 100% !important;
-        box-sizing: border-box;
-    }
-    
-    th { display: none !important; } /* Ocultar cabeceras tradicionales */
-    
-    #cuerpoTabla tr {
-        background: #1a222d !important;
-        margin-bottom: 15px !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        border: 1px solid #334155 !important;
-        height: auto !important;
-    }
-
-    /* Cada línea interna dentro del partido (Signo 1, Signo X, etc.) */
-    td {
-        display: flex !important;
-        flex-direction: row !important;      /* Texto a la izquierda, input a la derecha */
-        justify-content: space-between !important; /* Separa los extremos al máximo */
-        align-items: center !important;
-        padding: 8px 0 !important;
-        border: none !important;
-        border-bottom: 1px solid #2d3848 !important; /* Línea sutil de separación */
-        font-size: 13px !important;
-        width: 100% !important;
-    }
-
-    /* Línea superior con el nombre de los equipos */
-    td:nth-of-type(2) {
-        font-weight: bold !important;
-        color: #38bdf8 !important;
-        font-size: 15px !important;
-        border-bottom: 2px solid #334155 !important;
-        padding-bottom: 10px !important;
-        margin-bottom: 8px !important;
-        display: block !important;
-    }
-    td:nth-of-type(2)::before { content: "Partido: "; color: #94a3b8; font-size: 12px; }
-
-    /* Forzar que las casillas de selección e inputs se queden fijos a la derecha sin salirse */
-    .in-pro, .in-res-real, td select, td input {
-        width: 80px !important; /* Tamaño fijo controlado para que no desborde el lateral */
-        min-width: 80px !important;
-        height: 34px !important;
-        margin: 0 !important;
-        background: #0f172a !important;
-        color: #38bdf8 !important;
-        border: 1px solid #38bdf8 !important;
-        border-radius: 6px !important;
-        text-align: center !important;
-    }
+.btn-f {
+    flex: 0 0 auto; /* Impide que el botón se deforme */
+    width: 28px !important; /* Ajusta el ancho para que quepan los 9 botones */
+    height: 28px !important;
+    font-size: 0.8em;
 }
-
- /* CORRECCIÓN DIRECTA PARA LA TARJETA Y NAVEGACIÓN EN MÓVILES */
-@media (max-width: 768px) {
-    /* 1. Forzar que el contenedor de la tarjeta se ponga en vertical en el móvil */
+       
+       
+        @media (max-width: 768px) {
     #zona-nav {
-        display: flex !important;
-        flex-direction: column !important; /* Tarjeta arriba, botones abajo */
-        width: 100% !important;
-        gap: 15px !important;
-        padding: 10px !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 2. Forzar que el bloque de la tarjeta ocupe todo el ancho del Android */
-    .panel-tarjeta {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 3. Alinear el contenedor que envuelve al texto "Quiniela nº..." y a los botones */
-    .panel-tarjeta > div:first-child {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important; /* Texto arriba, fila de botones abajo */
-        gap: 10px !important;
-        text-align: center !important;
-    }
-
-    /* 4. Forzar a que los 4 botones de dirección (|<<, ANT, SIG, >>|) estén de lado a lado */
-    .panel-tarjeta > div:first-child > div:last-child {
-        display: flex !important;
-        flex-direction: row !important; /* Fila horizontal */
-        width: 100% !important;
-        gap: 6px !important; /* Espacio limpio entre ellos */
-        box-sizing: border-box !important;
-    }
-
-    /* 5. Hacer los botones de navegación grandes y cómodos para pulsar con el dedo */
-    .btn-nav {
-        flex: 1 !important; /* Se reparten el ancho de la pantalla a partes iguales */
-        width: auto !important;
-        height: 44px !important; /* Altura perfecta para pantallas táctiles */
-        font-size: 13px !important;
-        font-weight: bold !important;
-        background: #334155 !important;
-        color: white !important;
-        border: 1px solid #475569 !important;
-        border-radius: 6px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* 6. El recuadro oscuro donde se pintan los signos (1X2) de la apuesta */
-    #cardBox {
-        width: 100% !important;
-        min-height: 380px !important;
-        box-sizing: border-box !important;
-        padding: 12px !important;
-        margin-top: 10px !important;
+        position: sticky;
+        bottom: 0;
+        background: #1e293b;
+        padding: 10px;
+        border-top: 2px solid #38bdf8;
+        z-index: 100;
     }
 }
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    display: table !important; /* Fuerza a que no sea display:none */
+}
+#cuerpoTabla tr {
+    height: 40px !important;
+    border-bottom: 1px solid #334155 !important;
+}
+input {
+    background: #1e293b !important;
+    color: white !important;
+    border: 1px solid #334155 !important;
+}/* Clase para que el botón sea azul como el de Quiniela */
+.btn-azul {
+    background-color: #f88238; /* naranja de tu imagen */
+    color: #000;               /* Texto negro como se ve en la imagen */
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    /* REDUCIR EL ANCHO DE LAS CASILLAS 1, X, 2 EN MÓVILES */
-    
-    /* Forzamos a que la tabla ocupe el total de la pantalla táctil */
-    .table-responsive table {
-        width: 100% !important;
-        table-layout: fixed !important; /* Distribución fija controlada */
-    }
+.btn-azul:hover {
+    background-color: #0ee932; /* Un verde al pasar el ratón */
+}
 
-    /* Reducimos el espaciado interno (padding) de todas las celdas para ganar espacio */
-    .table-responsive th, 
-    .table-responsive td {
-        padding: 6px 2px !important; /* Espacio mínimo lateral */
-        font-size: 12px !important;  /* Letra compacta para que quepa todo */
-    }
+/* Ajuste para que los botones no salten de línea */
+[id^="btns-"] {
+    display: flex !important;
+    flex-wrap: nowrap !important; /* Evita que el 8 baje */
+    gap: 4px; /* Estrecha un poco el espacio entre botones */
+    justify-content: flex-start;
+}
 
-    /* Estrechar columnas específicas: P (Número) y los signos 1, X, 2 */
-    /* th/td nº1 (P), th/td nº3 (1), th/td nº4 (X), th/td nº5 (2) */
-    .table-responsive th:nth-child(1), .table-responsive td:nth-child(1),
-    .table-responsive th:nth-child(3), .table-responsive td:nth-child(3),
-    .table-responsive th:nth-child(4), .table-responsive td:nth-child(4),
-    .table-responsive th:nth-child(5), .table-responsive td:nth-child(5) {
-        width: 25px !important; /* Ancho ultra-estrecho justo para el signo */
-        min-width: 25px !important;
-        max-width: 25px !important;
-        text-align: center !important;
-        padding: 6px 0 !important;
-    }
+/* Reducir ligeramente el tamaño de los botones si fuera necesario */
+.btn-f {
+    min-width: 28px !important; /* Ajusta este valor según tu diseño */
+    padding: 4px 2px !important;
+    font-size: 0.85em !important;
+}
 
-    /* Darle todo el espacio restante a la columna de los Equipos (Columna 2) */
-    .table-responsive th:nth-child(2), 
-    .table-responsive td:nth-child(2) {
-        width: auto !important; /* Se expande de forma fluida */
-        text-align: left !important; /* Texto alineado a la izquierda para leer mejor */
-        padding-left: 5px !important;
-    }
 
-    /* Estrechar las casillas de control del final (Base, Difícil, Pronóstico, E8, 1X2) */
-    .table-responsive th:nth-child(6), .table-responsive td:nth-child(6),
-    .table-responsive th:nth-child(7), .table-responsive td:nth-child(7),
-    .table-responsive th:nth-child(8), .table-responsive td:nth-child(8),
-    .table-responsive th:nth-child(9), .table-responsive td:nth-child(9),
-    .table-responsive th:nth-child(10), .table-responsive td:nth-child(10) {
-        width: 42px !important; /* Ancho optimizado para los selectores azules pequeños */
-        min-width: 42px !important;
-    }
 
-    /* Ajustar el tamaño de los inputs y cajas azules de pronóstico dentro de la tabla */
-    .table-responsive td select, 
-    .table-responsive td input {
-        width: 100% !important;
-        max-width: 38px !important; /* Evita que desborden su celda estrecha */
-        height: 28px !important;
-        font-size: 11px !important;
-        padding: 2px !important;
-        border-radius: 4px !important;
-    }
-/* CORRECCIÓN INTEGRAL: TABLA CON CUOTAS DE 5 CARACTERES Y TARJETA ABAJO */
-@media (max-width: 768px) {
-    /* 1. Cambiamos el orden de la pantalla: Tabla arriba y Tarjeta debajo */
-    .layout-main {
-        display: flex !important;
-        flex-direction: column !important; /* Organización vertical */
-        gap: 15px !important;
-    }
-    
-    .zona-tabla {
-        order: 1 !important; /* Primer bloque visible */
-        width: 100% !important;
-    }
-    
-    #zona-nav {
-        order: 2 !important; /* Se desplaza abajo del todo, debajo de los partidos */
-        display: flex !important;
-        flex-direction: column !important;
-        width: 100% !important;
-        margin-top: 20px !important;
-    }
-
-    /* 2. Configuración fija de la tabla para reparto exacto de espacio */
-    .table-responsive table {
-        width: 100% !important;
-        table-layout: fixed !important; /* Fuerza los anchos exactos en píxeles */
-        border-collapse: collapse !important;
-    }
-
-    .table-responsive th, 
-    .table-responsive td {
-        padding: 6px 2px !important;
-        font-size: 11px !important; /* Letra compacta para que entre todo el bloque */
-        text-align: center !important;
-    }
-
-    /* Columna 1: P (Número de partido) -> Ultra estrecha */
-    .table-responsive th:nth-child(1), .table-responsive td:nth-child(1) {
-        width: 18px !important;
-    }
-
-    /* Columnas 3, 4 y 5: Celdas de 1, X, 2 optimizadas para cuotas largas (5 caracteres como 11,25) */
-    .table-responsive th:nth-child(3), .table-responsive td:nth-child(3),
-    .table-responsive th:nth-child(4), .table-responsive td:nth-child(4),
-    .table-responsive th:nth-child(5), .table-responsive td:nth-child(5) {
-        width: 42px !important; /* Ancho idéntico fijo para que quepa la cuota sin saltos */
-        min-width: 42px !important;
-        max-width: 42px !important;
-        white-space: nowrap !important; /* Evita que el número se rompa en dos líneas */
-    }
-
-    /* Columna 2: EQUIPOS -> Le damos el máximo tamaño libre de la pantalla para el nombre */
-    .table-responsive th:nth-child(2), .table-responsive td:nth-child(2) {
-        width: auto !important; 
-        text-align: left !important;
-        padding-left: 4px !important;
-        font-weight: bold;
-        color: #e2e8f0;
-    }
-
-    /* Columnas del final: Controles de Pronóstico y Filtros (Base, Difícil, Pro, E8, 1X2) */
-    .table-responsive th:nth-child(6), .table-responsive td:nth-child(6),
-    .table-responsive th:nth-child(7), .table-responsive td:nth-child(7),
-    .table-responsive th:nth-child(8), .table-responsive td:nth-child(8),
-    .table-responsive th:nth-child(9), .table-responsive td:nth-child(9),
-    .table-responsive th:nth-child(10), .table-responsive td:nth-child(10) {
-        width: 38px !important; /* Estrechas para que los inputs queden bien recogidos */
-        min-width: 38px !important;
-    }
-
-    /* Ajuste milimétrico de los selectores e inputs dentro de la tabla */
-    .table-responsive td select, 
-    .table-responsive td input {
-        width: 100% !important;
-        max-width: 34px !important;
-        height: 26px !important;
-        font-size: 11px !important;
-        padding: 2px !important;
-        border-radius: 4px !important;
-        background: #0f172a !important;
-        color: #38bdf8 !important;
-        border: 1px solid #334155 !important;
-    }
-
-    /* 3. Ajuste de la tarjeta de apuestas inferior */
-    .panel-tarjeta {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .panel-tarjeta > div:first-child > div:last-child {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        gap: 6px !important;
-    }
-
-    .btn-nav {
-        flex: 1 !important;
-        height: 44px !important;
-        font-size: 13px !important;
-        font-weight: bold !important;
-    }
-
-    #cardBox {
-        width: 100% !important;
-        min-height: 360px !important;
-        box-sizing: border-box !important;
-        margin-top: 10px !important;
+        
+        
+        .container { max-width: 1500px; margin: auto; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .panel-control { background: #0f172a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 20px; border: 1px solid #334155; }
+        .btn-main { padding: 8px 12px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; transition: 0.3s; }
+        .btn-quin { background: #38bdf8; color: #000; }
+        .btn-quin:hover {
+            background-color: #0ee932; /* Un verde al pasar el ratón */
         }
+        .btn-e8 { background: #ef4444; color: #fff; }
+        
+        
+        .herramientas-unificadas { display: flex; gap: 20px; margin-bottom: 20px; }
+        .caja-filtros { flex: 2; display: flex; gap: 10px; }
+        .filtro-card { background: #334155; padding: 12px; border-radius: 10px; flex: 1; border-bottom: 4px solid #38bdf8; }
+        .filtro-card h3 { color: #38bdf8; margin: 0 0 10px 0; font-size: 10px; }
+        .btns-f { display: flex; flex-wrap: wrap; gap: 3px; margin: 5px 0; }
+        .btn-f { width: 26px; height: 26px; background: #1a222d; color: white; border: 1px solid #3d4b5f; cursor: pointer; font-size: 10px; border-radius: 4px; }
+        .btn-f.active { background: #38bdf8; color: #000; font-weight: bold; }
+        .res-v { color: #38bdf8; font-weight: bold; font-size: 11px; min-height: 15px; }
 
-    /* ORDEN RESPONSIVO: MUEVE LA TARJETA DE LA QUINIELA DEBAJO DE TODOS LOS PARTIDOS */
-    
-    /* 1. Forzamos al contenedor general a apilar los bloques verticalmente */
-    .layout-main {
-        display: flex !important;
-        flex-direction: column !important; /* Alineación de arriba a abajo */
-        gap: 20px !important;
-        width: 100% !important;
-    }
-    
-    /* 2. Colocamos la zona de la tabla de partidos en la primera posición */
-    .zona-tabla {
-        order: 1 !important; /* Se queda arriba del todo */
-        width: 100% !important;
-    }
-    
-    /* 3. Colocamos el div de la tarjeta de la quiniela en la segunda posición (abajo) */
-    #zona-nav {
-        order: 2 !important; /* Se desplaza obligatoriamente abajo de la tabla */
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        width: 100% !important;
-        margin-top: 25px !important; /* Separación limpia con el final de los partidos */
-        box-sizing: border-box !important;
-    }
+        .caja-escrutinio { flex: 0.8; background: #1a222d; padding: 15px; border-radius: 10px; border: 1px solid #3d4b5f; }
+        .fila-e { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #2d3848; }
 
-    /* 4. Aseguramos que la tarjeta interna se estire al ancho completo de tu Android */
-    .panel-tarjeta {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
+        .layout-main { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+        table { width: 100%; border-collapse: collapse; background: #0f172a; }
+        th { background: #1e293b; color: #38bdf8; padding: 10px; border: 1px solid #334155; }
+        td { padding: 6px; border: 1px solid #334155; text-align: center; }
 
-    /* 5. Estilo para el cuadro de texto del número de página y los 4 botones de dirección */
-    .panel-tarjeta > div:first-child {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        text-align: center !important;
-        box-sizing: border-box !important;
-    }
+        .in-equipo, .in-cuota, .in-pro, .in-res-real { background: #38bdf8; border: 1px solid white; color: #fff; border-radius: 8px; padding: 4px; text-align: center; outline: none; }
+        .in-pro { width: 45px; font-weight: bold; background: #000; color: #38bdf8; border: 2px solid #38bdf8; }
+        .in-res-real { width: 40px; border: 1px solid #ffcc00; color: #ffcc00; font-weight: bold; }
 
-    /* Fila horizontal perfecta para los botones de navegación (|<<, ANT, SIG, >>|) */
-    .panel-tarjeta > div:first-child > div:last-child {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        gap: 6px !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Botones de navegación grandes y cómodos para tocar con el dedo en la parte inferior */
-    .btn-nav {
-        flex: 1 !important; /* Se dividen el espacio de la pantalla de forma exacta */
-        width: auto !important;
-        height: 46px !important; /* Altura táctil mejorada */
-        font-size: 13px !important;
-        font-weight: bold !important;
-        background: #334155 !important;
-        color: white !important;
-        border: 1px solid #475569 !important;
-        border-radius: 6px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* 6. El recuadro negro donde se leen las columnas generadas en tu quiniela */
-    #cardBox {
-        width: 100% !important;
-        min-height: 380px !important;
-        box-sizing: border-box !important;
-        padding: 15px !important;
-        margin-top: 15px !important;
-        background: #1a222d !important;
-        border: 1px solid #38bdf8 !important;
-        border-radius: 8px !important;
-    }
-
-    }
-
-
-
-
-</style>
+        .filtro-card h3 { color: #38bdf8; margin: 0 0 10px 0; font-size: 10px; }
+        #cardBox { background: #1a222d; color:#38bdf8; padding: 15px; border-radius: 8px; min-height: 420px; border: 1px solid #38bdf8; font-family: monospace; }
+        .linea-card { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 4px 0; }
+        .btn-nav { width: 22%; padding: 5px; font-size: 9px; background: #334155; color: white; border: 1px solid #475569; border-radius: 4px; cursor: pointer; }
+    </style>
 </head>
 <body>
+
 <div class="container">
     <div class="panel-control">
-        <div>
+
+        
+        <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label>Jornada:</label>
             <select id="selector-jornada" class="in-equipo" onchange="cargarDatos()">
-                <option value="55">55</option><option value="64">64</option>
+                <option value="55">55</option>
+                <option value="64">64</option>
             </select>
         </div>
-        <div>
+        <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label>Porcentaje:</label>
             <input type="range" id="rangePct" min="0" max="100" value="0" oninput="document.getElementById('valPct').innerText = this.value + '%'">
             <b id="valPct" style="color:#38bdf8; width:35px">0%</b>
-        </div>
-        <div>
+        <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label>Reducción:</label>
             <select id="selReduccion" class="in-equipo">
-                <option value="14">Al 14</option><option value="13">Al 13</option><option value="12">Al 12</option><option value="11">Al 11</option><option value="10">Al 10</option>
+                <option value="14">Al 14</option><option value="13">Al 13</option>
+                <option value="12">Al 12</option><option value="11">Al 11</option>
+                <option value="10">Al 10</option>
             </select>
         </div>
-        <div style="width: 100%; flex-wrap: wrap;">
-            <button class="btn-main btn-quin" onclick="generarApp(false)">🏆 Quiniela</button>
-            <button class="btn-azul" onclick="generarApp(true)" style="background: #10b981; color: white">🎯ELIGE 8</button>
-            <button class="btn-main" onclick="descargarColumnasFinales()" style="background: #10b981; color: white;">DESCARGAR(E8)</button>
-            <button class="btn-main" style="background:#0ea5e9" onclick="exportarTXT()">📥 Quiniela TXT</button>
-            <button class="btn-main" style="background:#f59e0b; color:black" onclick="guardarProyectoCompleto()">💾 GUARDAR</button>
-            <button class="btn-main" style="background:#10b981; color:white" onclick="document.getElementById('inputFile').click()">📂 ABRIR</button>
-            <input type="file" id="inputFile" style="display:none" onchange="cargarProyectoCompleto(event)" accept="*">
         </div>
-        <div style="width: 100%; justify-content: space-around;">
-            <div>Triples: <b id="infoTriples" style="color: #fbbf24; font-size: 16px;">0</b></div>
-            <div>Dobles: <b id="infoDobles" style="color: #fbbf24; font-size: 16px;">0</b></div>
-            <div>Columnas: <b id="stFiltrado" style="color: #22c55e; font-size: 16px;">0</b></div>
-        </div>
+       <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+    <button class="btn-main btn-quin" onclick="generarApp(false)">🏆 Quiniela</button>
+    <button class="btn-azul" onclick="generarApp(true)" style="background: #10b981; color: white">🎯ELIGE 8
+</button>
+<button onclick="descargarColumnasFinales()" style="background: #10b981; color: white; padding: 10px; border-radius: 5px; cursor: pointer; border: none; margin-left: 10px;">
+    DESCARGAR(E8)
+</button>
+
+    <button class="btn-main" style="background:#0ea5e9" onclick="exportarTXT()">📥 Quiniela TXT</button>
+    
+    <!-- BOTONES DE PROYECTO -->
+    <button class="btn-main" style="background:#f59e0b; color:black" onclick="guardarProyectoCompleto()">💾 GUARDAR</button>
+    <button class="btn-main" style="background:#10b981; color:white" onclick="document.getElementById('inputFile').click()">📂 ABRIR</button>
+    
+    <!-- Input oculto para cargar archivos -->
+    <!-- Cambiamos accept=".json" por accept="*" para máxima compatibilidad en móvil -->
+<input type="file" id="inputFile" style="display:none" onchange="cargarProyectoCompleto(event)" accept="*">
+
+</div>
+
+
+    <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+        <div>Triples: <b id="infoTriples" style="color: #fbbf24;font-size: 16px;">0</b></div>
+        <div>Dobles: <b id="infoDobles" style="color: #fbbf24;font-size: 16px;">0</b></div>
+        <div style="margin-left: auto;">Columnas: <b id="stFiltrado" style="color: #22c55e; font-size: 16px;">0</b></div>
     </div>
+    </div>
+
+    
+
     <div class="herramientas-unificadas">
-        <!-- Tarjeta: Filtros de Primera y Segunda División -->
-        <div class="filtro-card">
-            <h3>Filtros 1ª DIV (P1-P8)</h3>
-            <div class="grupo-f" data-label="Unos: "><div class="btns-f" id="btns-u-1"></div></div>
-            <div class="grupo-f" data-label="Base: "><div class="btns-f" id="btns-b-1"></div></div>
-            <div class="grupo-f" data-label="Dif: "><div class="btns-f" id="btns-d-1"></div></div>
-            
-            <h3>Filtros 2ª DIV (P9-P14)</h3>
-            <div class="grupo-f" data-label="Unos: "><div class="btns-f" id="btns-u-2"></div></div>
-            <div class="grupo-f" data-label="Base: "><div class="btns-f" id="btns-b-2"></div></div>
-            <div class="grupo-f" data-label="Dif: "><div class="btns-f" id="btns-d-2"></div></div>
-        </div>
+    
+    <!-- Filtros 1ª DIV -->
+   
+    <div class="filtro-card">
+       
+        <h3>Filtros 1ª DIV (P1-P8)</h3>
+        <div class="grupo-f" data-label="Unos: "><div class="btns-f" id="btns-u-1"></div></div>
+        <div class="grupo-f" data-label="Base: "><div class="btns-f" id="btns-b-1"></div></div>
+        <div class="grupo-f" data-label="Dif: "><div class="btns-f" id="btns-d-1"></div></div>
+        
+    <!-- Filtros 2ª DIV -->
+    
+        <h3>Filtros 2ª DIV (P9-P14)</h3>
+        <div class="grupo-f" data-label="Unos: "><div class="btns-f" id="btns-u-2"></div></div>
+        <div class="grupo-f" data-label="Base: "><div class="btns-f" id="btns-b-2"></div></div>
+        <div class="grupo-f" data-label="Dif: "><div class="btns-f" id="btns-d-2"></div></div>
+   
+    </div>
 
-        <!-- Tarjeta: Filtros Elige 8 -->
-        <div class="filtro-card">
-            <h3>Filtros Elige 8</h3>
-            <div style="margin-bottom: 15px;">
-                <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold; display: block; margin-bottom: 8px;">BASES:</span>
-                <div id="btns-e8b">
-                    <button class="btn-f" onclick="this.classList.toggle('active')">0</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">1</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">2</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">3</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">4</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">5</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">6</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">7</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">8</button>
-                </div>
-            </div>
-            <div>
-                <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold; display: block; margin-bottom: 8px;">DIFÍCILES:</span>
-                <div id="btns-e8d">
-                    <button class="btn-f" onclick="this.classList.toggle('active')">0</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">1</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">2</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">3</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">4</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">5</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">6</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">7</button>
-                    <button class="btn-f" onclick="this.classList.toggle('active')">8</button>
-                </div>
-            </div>
-        </div>
+   
 
-        <!-- Tarjeta: Escrutinio Unificado -->
-        <div class="filtro-card" style="padding: 15px;">
-            <h3>Escrutinio Unificado</h3>
-            <div style="display: flex; gap: 15px; justify-content: space-between;">
-                <div style="flex: 1;">
-                    <div style="color: #f87171; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">QUINIELA</div>
-                    <div class="fila-e">14: <b id="esc-14" style="color: #fbbf24;">0</b></div>
-                    <div class="fila-e">13: <b id="esc-13" style="color: #a855f7;">0</b></div>
-                    <div class="fila-e">12: <b id="esc-12" style="color: #38bdf8;">0</b></div>
-                    <div class="fila-e">11: <b id="f87171;">0</b></div>
-                    <div class="fila-e">10: <b id="esc-10" style="color: #4ade80;">0</b></div>
-                </div>
-                <div style="flex: 1; border-left: 2px solid #334155; padding-left: 15px;">
-                    <div style="color: #38bdf8; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">ELIGE 8</div>
-                    <div class="fila-e">8: <b id="escE8-8" style="color: #38bdf8;">0</b></div>
-                    <div class="fila-e">7: <b id="escE8-7" style="color: #fbbf24;">0</b></div>
-                    <div class="fila-e">6: <b id="escE8-6" style="color: #4ade80;">0</b></div>
-                    <div class="fila-e">5: <b id="escE8-5" style="color: #94a3b8;">0</b></div>
-                    <div class="fila-e">4: <b id="escE8-4" style="color: #f8717b;">0</b></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tarjeta: Escrutinio Total -->
-        <div class="filtro-card" style="padding: 15px;">
-            <h3>ESCRUTINIO TOTAL</h3>
-            <div style="display: flex; gap: 15px; justify-content: space-between;">
-                <div style="flex: 1;">
-                    <div style="color: #94a3b8; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">PREMIO</div>
-                    <div class="fila-e">14: <input type="number" id="val-14" value="50000" style="width:55px; background:transparent; border:none; color:#fbbf24; font-weight:bold;">€</div>
-                    <div class="fila-e">13: <input type="number" id="val-13" value="500" style="width:55px; background:transparent; border:none; color:#a855f7; font-weight:bold;" oninput="calcularPremios()">€</div>
-                    <div class="fila-e">12: <input type="number" id="val-12" value="20" style="width:55px; background:transparent; border:none; color:#38bdf8; font-weight:bold;">€</div>
-                    <div class="fila-e">11: <input type="number" id="val-11" value="3" style="width:55px; background:transparent; border:none; color:#f87171; font-weight:bold;">€</div>
-                    <div class="fila-e">10: <input type="number" id="val-10" value="1.5" style="width:55px; background:transparent; border:none; color:#4ade80; font-weight:bold;">€</div>
-                </div>
-                <div style="flex: 1; border-left: 2px solid #334155; padding-left: 15px;">
-                    <div style="color: #f87171; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">TOTAL GANADO</div>
-                    <div style="text-align: center; margin-top: 5px;">
-                        <div style="font-size: 0.7em; color: #94a3b8;">QUINIELA</div>
-                        <div id="total-q" style="font-size: 1.2em; color: #f87171; font-weight: bold;">0.00€</div>
-                    </div>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <div style="font-size: 0.7em; color: #38bdf8; border-top: 1px solid #334155; padding-top: 5px;">E8 (13% del 13)</div>
-                        <div id="total-e8" style="font-size: 1.2em; color: #38bdf8; font-weight: bold;">0.00€</div>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 15px; padding-top: 10px; border-top: 2px solid #38bdf8; text-align: center; background: rgba(56, 189, 248, 0.1); border-radius: 5px;">
-                <div style="font-size: 0.8em; color: #38bdf8; font-weight: bold; text-transform: uppercase;">Total Acumulado</div>
-                <div id="gran-total" style="font-size: 1.6em; color: #4ade80; font-weight: bold;">0.00€</div>
-            </div>
-        </div>
-
-        <!-- Tarjeta: Cobertura -->
-        <div class="filtro-card" style="padding: 15px;">
-            <h3>Cobertura</h3>
-            <div id="panel-cobertura" style="font-family: monospace; font-size: 0.85em;">
-                <div style="color: #94a3b8; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px;">
-                    <b id="inv-recuperar" style="color: #fbbf24;"></b>
-                </div>
-                <div id="lista-coberturas" style="display: flex; flex-direction: column; gap: 8px;"></div>
-            </div>
+    <!-- Filtros Elige 8 -->
+    <!-- Filtros Elige 8 Unificado -->
+<div class="filtro-card">
+    <h3>Filtros Elige 8</h3>
+    
+    <div style="margin-bottom: 15px;">
+        <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold; display: block; margin-bottom: 8px;">BASES:</span>
+        <div id="btns-e8b" style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <!-- Generamos del 0 al 8 -->
+            <button class="btn-f" onclick="this.classList.toggle('active')">0</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">1</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">2</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">3</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">4</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">5</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">6</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">7</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">8</button>
         </div>
     </div>
-    <div class="layout-main">
-        <!-- Columna de la Tabla de Equipos con Scroll Horizontal -->
-        <div class="zona-tabla">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr><th>P</th><th>Equipos</th><th>1</th><th>X</th><th>2</th><th>Base</th><th>Difícil</th><th>Pronóstico</th><th>E8</th><th>1X2</th></tr>
-                    </thead>
-                    <tbody id="cuerpoTabla"></tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- Columna Secundaria: Tarjeta de Apuestas y Botones de Escrutinio -->
-        <div id="zona-nav" style="display:none; justify-content: center; gap: 15px; margin-top: 20px;">
-            <div class="panel-tarjeta">
-                <div style="text-align:center; margin-bottom:10px">
-                    <div id="txtPag" style="color:#38bdf8; font-weight:bold; margin-bottom:10px"></div>
-                    <div style="display:flex; justify-content:space-between; gap: 5px;">
-                        <button class="btn-nav" onclick="irA(0)">|<<</button>
-                        <button class="btn-nav" onclick="cambiarIdx(-1)">ANT</button>
-                        <button class="btn-nav" onclick="cambiarIdx(1)">SIG</button>
-                        <button class="btn-nav" onclick="irA(validas.length-1)">>>|</button>
-                    </div>
-                </div>
-                
-                <div id="cardBox"></div>
-                
-                <!-- Ajuste del selector del Pleno al 15 -->
-                <div style="margin-top: 10px; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;">
-                    <span style="color: #38bdf8; font-weight: bold; font-size: 0.9em;">PLENO 15:</span>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <label style="font-size: 0.8em; color: #94a3b8;">L</label>
-                        <select id="p15L" class="in-equipo" style="width: 50px; background: #0f172a; color: #38bdf8; border: 1px solid #38bdf8;">
-                            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="M">M</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <label style="font-size: 0.8em; color: #94a3b8;">V</label>
-                        <select id="p15V" class="in-equipo" style="width: 50px; background: #0f172a; color: #38bdf8; border: 1px solid #38bdf8;">
-                            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="M">M</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                    <button class="btn-main" onclick="ejecutarEscrutinio()" style="background: #22d679; color: #0f172a;">Calcular Escrutinio</button>
-                    <button class="btn-main" onclick="conmutarDetallePremios()" style="background: #38bdf8; color: #0f172a;">Ver / Ocultar Detalle Premios</button>
-                </div>
-            </div>
-
-            <!-- Listado Detallado de Premios -->
-            <div id="premiosList" style="display: none; width: 100%; max-width: 250px; max-height: 500px; overflow-y: auto; background: #1e293b; border-radius: 8px; padding: 10px; border: 1px solid #334155; box-sizing: border-box;">
-                <h4 style="color: #38bdf8; text-align: center; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 5px;">Detalle Premios</h4>
-                <div id="listaItems" style="font-family: monospace; font-size: 0.85em; color: white;"></div>
-            </div>
+    <div>
+        <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold; display: block; margin-bottom: 8px;">DIFÍCILES:</span>
+        <div id="btns-e8d" style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button class="btn-f" onclick="this.classList.toggle('active')">0</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">1</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">2</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">3</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">4</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">5</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">6</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">7</button>
+            <button class="btn-f" onclick="this.classList.toggle('active')">8</button>
         </div>
     </div>
 </div>
 
-</body>
-</html>
+    <!-- Escrutinio -->
+   <div class="filtro-card" style="min-width: 150px; padding: 15px;">
+    <h3>Escrutinio Unificado</h3>
+    <div style="display: flex; gap: 15px; justify-content: space-between;">
+        <!-- Columna Quiniela -->
+        <div style="flex: 1;">
+            <div style="color: #f87171; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">QUINIELA</div>
+            <div class="fila-e" style="font-size: 1.1em;">14: <b id="esc-14" style="font-size: 1.1em; color: #fbbf24;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">13: <b id="esc-13" style="font-size: 1.1em; color: #a855f7;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">12: <b id="esc-12" style="font-size: 1.1em; color: #38bdf8;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">11: <b id="esc-11" style="font-size: 1.1em; color: #f87171;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">10: <b id="esc-10" style="font-size: 1.1em; color: #4ade80;">0</b></div>
+        </div>
+        <!-- Columna Elige 8 -->
+        <div style="flex: 1; border-left: 2px solid #334155; padding-left: 15px;">
+            <div style="color: #38bdf8; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">ELIGE 8</div>
+            <div class="fila-e" style="font-size: 1.1em;">8: <b id="escE8-8" style="font-size: 1.1em; color: #38bdf8;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">7: <b id="escE8-7" style="font-size: 1.1em; color: #fbbf24;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">6: <b id="escE8-6" style="font-size: 1.1em; color: #4ade80;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">5: <b id="escE8-5" style="font-size: 1.1em; color: #94a3b8;">0</b></div>
+            <div class="fila-e" style="font-size: 1.1em;">4: <b id="escE8-4" style="font-size: 1.1em; color: #f8717b;">0</b></div>
+        </div>
+    </div>
+</div>
+<div class="filtro-card" style="min-width: 220px; padding: 15px">
+    <h3>ESCRUTINIO TOTAL</h3>
+    <div style="display: flex; gap: 15px; justify-content: space-between;">
+        <!-- Columna Importes Quiniela -->
+        <div style="flex: 1;">
+            <div style="color: #94a3b8; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">PREMIO</div>
+            <div class="fila-e" style="font-size: 1.1em;">14: <input type="number" id="val-14" value="50000" style="width:65px; background:transparent; border:none; color:#fbbf24; font-weight:bold;">€</div>
+            <div class="fila-e" style="font-size: 1.1em;">13: <input type="number" id="val-13" value="500" style="width:65px; background:transparent; border:none; color:#a855f7; font-weight:bold;" oninput="calcularPremios()">€</div>
+            <div class="fila-e" style="font-size: 1.1em;">12: <input type="number" id="val-12" value="20" style="width:65px; background:transparent; border:none; color:#38bdf8; font-weight:bold;">€</div>
+            <div class="fila-e" style="font-size: 1.1em;">11: <input type="number" id="val-11" value="3" style="width:65px; background:transparent; border:none; color:#f87171; font-weight:bold;">€</div>
+            <div class="fila-e" style="font-size: 1.1em;">10: <input type="number" id="val-10" value="1.5" style="width:65px; background:transparent; border:none; color:#4ade80; font-weight:bold;">€</div>
+        </div>
+        <!-- Columna Totales Ganados -->
+        <div style="flex: 1; border-left: 2px solid #334155; padding-left: 15px;">
+            <div style="color: #f87171; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; text-align: center;">TOTAL GANADO</div>
+            <div style="text-align: center; margin-top: 10px;">
+                <div style="font-size: 0.7em; color: #94a3b8;">QUINIELA</div>
+                <div id="total-q" style="font-size: 1.4em; color: #f87171; font-weight: bold;">0.00€</div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div style="font-size: 0.7em; color: #38bdf8; border-top: 1px solid #334155; padding-top: 5px;">E8 (13% del 13)</div>
+                <div id="total-e8" style="font-size: 1.4em; color: #38bdf8; font-weight: bold;">0.00€</div>
+            </div>
+        </div>
+    </div>
+      <!-- SECCIÓN GRAN TOTAL -->
+    <div style="margin-top: 15px; padding-top: 10px; border-top: 2px solid var(--accent); text-align: center; background: rgba(56, 189, 248, 0.1); border-radius: 5px;">
+        <div style="font-size: 0.8em; color: var(--accent); font-weight: bold; text-transform: uppercase;">Total Acumulado (Q + E8)</div>
+        <div id="gran-total" style="font-size: 1.8em; color: #4ade80; font-weight: bold; text-shadow: 0 0 10px var(--accent);">0.00€</div>
+    </div>
+</div>
+<div class="filtro-card" style="min-width: 220px; padding: 15px; border-bottom-color: #f87171;">
+    <h3>Cobertura</h3>
+    <div id="panel-cobertura" style="font-family: monospace; font-size: 0.85em;">
+        <div style="color: #94a3b8; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px;">
+            <b id="inv-recuperar" style="color: #fbbf24;"></b>
+        </div>
+        <div id="lista-coberturas" style="display: flex; flex-direction: column; gap: 8px;">
+            
+        </div>
+    </div>
+</div>
 
+
+    <!-- Garantías 
+    <div class="filtro-card">
+        <h3>Garantías</h3>
+        <div class="linea-card"><span>Al 14:</span> <b id="g-14" style="color:#f87171">0%</b></div>
+        <div class="linea-card"><span>Al 13:</span> <b id="g-13" style="color:#fbbf24">0%</b></div>
+        <div class="linea-card"><span>Al 12:</span> <b id="g-12" style="color:#4ade80">0%</b></div>
+        <div class="linea-card"><span>Al 11:</span> <b id="g-11" style="color:#4ade80">0%</b></div>
+        <div class="linea-card"><span>Al 10:</span> <b id="g-10" style="color:#4ade80">0%</b></div>
+    </div> -->
+
+</div>
+
+
+    <div class="layout-main">
+    <div class="zona-tabla">
+        <table>
+            <thead>
+                <tr><th>P</th><th>Equipos</th><th>1</th><th>X</th><th>2</th><th>Base</th><th>Difícil</th><th>Pronóstico</th><th>E8</th><th>1X2</th></tr>
+            </thead>
+            <tbody id="cuerpoTabla"></tbody>
+        </table>
+    </div>
+
+    <!-- Contenedor flexible para Tarjeta + Premios -->
+    <div id="zona-nav" style="display:none; justify-content: center; gap: 20px; margin-top: 20px;">
+        
+        <!-- PARTE IZQUIERDA: Tarjeta y Navegación -->
+        <div class="panel-tarjeta" style="width: 450px;">
+            <div style="text-align:center; margin-bottom:10px">
+                <div id="txtPag" style="color:#38bdf8; font-weight:bold; margin-bottom:10px"></div>
+                <div style="display:flex; justify-content:space-between">
+                    <button class="btn-nav" onclick="irA(0)">|<<</button>
+                    <button class="btn-nav" onclick="cambiarIdx(-1)">ANT</button>
+                    <button class="btn-nav" onclick="cambiarIdx(1)">SIG</button>
+                    <button class="btn-nav" onclick="irA(validas.length-1)">>>|</button>
+                </div>
+            </div>
+            <div id="cardBox"></div>
+            <!-- Selector de Pleno al 15 -->
+<div style="margin-top: 10px; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; gap: 15px;">
+    <span style="color: #38bdf8; font-weight: bold; font-size: 0.9em;">PLENO AL 15:</span>
+    <div style="display: flex; align-items: center; gap: 5px;">
+        <label style="font-size: 0.8em; color: #94a3b8;">Local</label>
+        <select id="p15L" class="in-equipo" style="width: 50px; background: #0f172a; color: #38bdf8; border: 1px solid #38bdf8;">
+            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="M">M</option>
+        </select>
+    </div>
+    <div style="display: flex; align-items: center; gap: 5px;">
+        <label style="font-size: 0.8em; color: #94a3b8;">Visitante</label>
+        <select id="p15V" class="in-equipo" style="width: 50px; background: #0f172a; color: #38bdf8; border: 1px solid #38bdf8;">
+            <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="M">M</option>
+        </select>
+    </div>
+</div>
+
+        </div>
+<!-- Botón primario para calcular los datos -->
+<button onclick="ejecutarEscrutinio()" style="padding: 8px 12px; background: #22d679; color: #0f172a; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Calcular Escrutinio</button>
+     <!-- Botón para ver/ocultar el detalle (puedes darle el estilo CSS que quieras) -->
+<button onclick="conmutarDetallePremios()" style="padding: 8px 12px; background: #38bdf8; color: #0f172a; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
+    Ver / Ocultar Detalle Premios
+</button>
+
+<!-- Nueva columna de premios (Empieza oculta con display:none) -->
+<div id="premiosList" style="display: none; width: 250px; max-height: 550px; overflow-y: auto; background: #1e293b; border-radius: 8px; padding: 10px; border: 1px solid #334155;">
+    <h4 style="color: #38bdf8; text-align: center; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 5px; font-family: sans-serif;">Detalle Premios</h4>
+    
+    <!-- Aquí dentro se inyectarán las apuestas con formato monospace -->
+    <div id="listaItems" style="font-family: monospace; font-size: 0.85em; color: white;"></div>
+</div>
+
+    </div>
+</div>
+
+    </div>
+        
+    </div>
+</div>
 
   
 
@@ -1883,8 +1434,8 @@ function poblarTabla(partidos) {
             h += `<tr id="fila_${n}">
                 <td><b>${n}</b></td>
                 <td>
-                    <input class="in-equipo" style="width:100px" id="L${n}" value="${p.local || ''}" placeholder="Local"> 
-                    <input class="in-equipo" style="width:100px" id="V${n}" value="${p.visitante || ''}" placeholder="Visitante">
+                    <input class="in-equipo" id="L${n}" value="${p.local || ''}" placeholder="Local"> 
+                    <input class="in-equipo" id="V${n}" value="${p.visitante || ''}" placeholder="Visitante">
                 </td>
                 <td><input type="number" step="0.1" class="in-cuota" id="c1_${n}" value="${v1}" oninput="analizar(${n})"></td>
                 <td><input type="number" step="0.1" class="in-cuota" id="cX_${n}" value="${vX}" oninput="analizar(${n})"></td>
