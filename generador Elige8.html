@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Elige 8 - Principal Mejorado</title>
+    <title>Elige 8</title>
     <style>
         body { font-family: sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
         .container { max-width: 1050px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin: 0 auto; text-align: center; }
@@ -101,7 +101,7 @@
                     <th>Quinielas</th>
                     <th>Combinación</th>
                     <th>Aciertos</th>
-                    <th>¿Tiene 7 Aciertos?</th>
+                    <th>7 Aciertos</th>
                 </tr>
             </thead>
             <tbody id="cuerpoTabla"></tbody>
@@ -323,7 +323,7 @@ function ejecutarEscrutinioYOrdenacion() {
     let cuerpo = document.getElementById("cuerpoTabla");
     cuerpo.innerHTML = "";
     let htmlBuilder = "";
-    let lineasArchivo = ["// CONFIGURACIÓN ELIGE 8 - SISTEMA DE REDUCCIÓN DE MÁXIMA COMPRESIÓN", ""];
+    let lineasArchivo = ["// ELIGE 8 - SISTEMA DE REDUCCIÓN", ""];
 
     for (let i = 0; i < registros.length; i++) {
         let item = registros[i];
