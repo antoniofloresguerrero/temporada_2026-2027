@@ -1,0 +1,215 @@
+{
+  "fecha": "11/8/2026, 8:31:43",
+  "configuracion": {
+    "jornada": "1",
+    "porcentaje": "25",
+    "reduccion": "13",
+    "columnas_generadas": 0,
+    "garantias": {
+      "g14": "0%",
+      "g13": "0%",
+      "g12": "0%",
+      "g11": "0%",
+      "g10": "0%"
+    }
+  },
+  "partidos": [
+    {
+      "id": 1,
+      "local": "Allavés",
+      "visitante": "Getafe",
+      "c1": "2.3",
+      "cx": "2.8",
+      "c2": "3.6",
+      "pro": "1X2",
+      "e8": false,
+      "real": "1"
+    },
+    {
+      "id": 2,
+      "local": "Sevilla",
+      "visitante": "Rayo",
+      "c1": "2.2",
+      "cx": "3.1",
+      "c2": "3.25",
+      "pro": "1X",
+      "e8": false,
+      "real": "x"
+    },
+    {
+      "id": 3,
+      "local": "Racing",
+      "visitante": "Villarreal",
+      "c1": "3",
+      "cx": "3.4",
+      "c2": "2.3",
+      "pro": "1X2",
+      "e8": false,
+      "real": "2"
+    },
+    {
+      "id": 4,
+      "local": "Español",
+      "visitante": "Levante",
+      "c1": "2",
+      "cx": "3.4",
+      "c2": "3.7",
+      "pro": "1",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 5,
+      "local": "Celta",
+      "visitante": "Osasuna",
+      "c1": "1.95",
+      "cx": "3.3",
+      "c2": "3.9",
+      "pro": "1X",
+      "e8": false,
+      "real": "1"
+    },
+    {
+      "id": 6,
+      "local": "Andorra",
+      "visitante": "Ceuta",
+      "c1": "1.6",
+      "cx": "3.8",
+      "c2": "5",
+      "pro": "1X2",
+      "e8": false,
+      "real": "2"
+    },
+    {
+      "id": 7,
+      "local": "Cádiz",
+      "visitante": "Celta B",
+      "c1": "1.5",
+      "cx": "3.2",
+      "c2": "4",
+      "pro": "1",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 8,
+      "local": "Oviedo",
+      "visitante": "Granada",
+      "c1": "1.5",
+      "cx": "3",
+      "c2": "3.5",
+      "pro": "12",
+      "e8": false,
+      "real": "2"
+    },
+    {
+      "id": 9,
+      "local": "Mallorca",
+      "visitante": "Vallladolid",
+      "c1": "1.7",
+      "cx": "3.3",
+      "c2": "5",
+      "pro": "1X2",
+      "e8": true,
+      "real": "2"
+    },
+    {
+      "id": 10,
+      "local": "Eibar",
+      "visitante": "Tennerife",
+      "c1": "1.8",
+      "cx": "3.25",
+      "c2": "5",
+      "pro": "1X",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 11,
+      "local": "Burgos",
+      "visitante": "Córdoba",
+      "c1": "2.25",
+      "cx": "3.2",
+      "c2": "3.21",
+      "pro": "1X2",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 12,
+      "local": "Girona",
+      "visitante": "Leganés",
+      "c1": "1.61",
+      "cx": "3.3",
+      "c2": "5.5",
+      "pro": "1",
+      "e8": true,
+      "real": "x"
+    },
+    {
+      "id": 13,
+      "local": "Las Palmas",
+      "visitante": "Albacete",
+      "c1": "1.7",
+      "cx": "3.6",
+      "c2": "5",
+      "pro": "12",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 14,
+      "local": "Sporting",
+      "visitante": "Sabadell",
+      "c1": "1.83",
+      "cx": "3.2",
+      "c2": "4.33",
+      "pro": "1",
+      "e8": true,
+      "real": "1"
+    },
+    {
+      "id": 15,
+      "local": "",
+      "visitante": "",
+      "c1": 0,
+      "cx": 0,
+      "c2": 0,
+      "pro": "0-0",
+      "e8": false,
+      "real": ""
+    }
+  ],
+  "filtros": {
+    "u1": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "u2": [],
+    "b1": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "b2": [
+      "2",
+      "3",
+      "4"
+    ],
+    "d1": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "d2": [
+      "0",
+      "1",
+      "2"
+    ]
+  },
+  "apuestas_actuales": []
+}

@@ -235,8 +235,27 @@ input {
         <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label>Jornada:</label>
             <select id="selector-jornada" class="in-equipo" onchange="cargarDatos()">
-                <option value="55">55</option>
-                <option value="64">64</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                 <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                 <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                 <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
             </select>
         </div>
         <div style="background: #334155; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
@@ -1251,7 +1270,7 @@ function calcularGarantias() {
     return ""; 
 }
 
-function guardarProyectoCompleto() {
+async function guardarProyectoCompleto() { // Agregamos 'async' al inicio
     try {
         // Aseguramos que 'jornada' tenga un valor
         const selectorJornada = document.getElementById('selector-jornada');
@@ -1260,7 +1279,6 @@ function guardarProyectoCompleto() {
         // 1. Recopilar datos de los partidos (1 al 15)
         let partidos = [];
         for (let i = 1; i <= 15; i++) {
-            // Caso especial para el Pleno al 15
             let pronostico = "";
             if (i === 15) {
                 const p15L = document.getElementById('p15L')?.value || "0";
@@ -1298,8 +1316,7 @@ function guardarProyectoCompleto() {
             }
         });
 
-        // 3. Recopilar Configuración y Garantías (Con salvaguardas si no se han generado aún)
-        // Usamos window.validas para evitar errores si la variable global no existe
+        // 3. Recopilar Configuración y Garantías
         const nValidass = (window.validas && window.validas.length) ? window.validas.length : 0;
 
         const configuracion = {
@@ -1325,25 +1342,50 @@ function guardarProyectoCompleto() {
             apuestas_actuales: window.validas || [] 
         };
 
-        // 5. Descargar archivo JSON
-        const blob = new Blob([JSON.stringify(proyecto, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", url);
-        downloadAnchorNode.setAttribute("download", `Quiniela_J${jornada}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        
-        // Limpiamos la memoria del objeto URL
-        URL.revokeObjectURL(url);
+        // 5. NUEVO MÉTODO: Guardar eligiendo ubicación (File System Access API)
+        const jsonString = JSON.stringify(proyecto, null, 2);
+
+        // Comprobamos si el navegador soporta la API moderna (Chrome, Edge, Opera, etc.)
+        if ('showSaveFilePicker' in window) {
+            const opciones = {
+                suggestedName: `Quiniela_J${jornada}.json`,
+                types: [{
+                    description: 'Archivo de Proyecto Quiniela (JSON)',
+                    accept: { 'application/json': ['.json'] }
+                }]
+            };
+
+            // Abre la ventana nativa del sistema para elegir la carpeta y nombre
+            const handle = await window.showSaveFilePicker(opciones);
+            const writable = await handle.createWritable();
+            await writable.write(jsonString);
+            await writable.close();
+            
+        } else {
+            // MODO DE RESPALDO (Fallback): Si usan Firefox, Safari o móviles antiguos
+            // Esto descargará automáticamente el archivo en la carpeta por defecto del sistema
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", url);
+            downloadAnchorNode.setAttribute("download", `Quiniela_J${jornada}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            URL.revokeObjectURL(url);
+        }
 
     } catch (error) {
+        // Si el usuario simplemente cancela la ventana de guardar, evitamos mostrar un alert de error
+        if (error.name === 'AbortError') {
+            console.log("El usuario canceló la descarga.");
+            return;
+        }
         console.error("Error al guardar el proyecto:", error);
         alert("Error al guardar: Asegúrate de haber generado la quiniela antes.");
     }
 }
+
 
 async function cargarDatos() {
     console.log("Intentando recuperar datos...");
