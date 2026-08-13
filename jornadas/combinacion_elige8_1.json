@@ -1,0 +1,51 @@
+{
+  "filtros": {
+    "minUnos": "3",
+    "maxUnos": "6",
+    "minDoses": "0",
+    "maxDoses": "5",
+    "porcentajeCubrir": "75"
+  },
+  "partidos": [
+    {
+      "id": 1,
+      "jugado": true,
+      "signo": "1"
+    },
+    {
+      "id": 2,
+      "jugado": true,
+      "signo": "2"
+    },
+    {
+      "id": 3,
+      "jugado": false,
+      "signo": "1"
+    },
+    {
+      "id": 4,
+      "jugado": false,
+      "signo": "1"
+    },
+    {
+      "id": 5,
+      "jugado": false,
+      "signo": "1"
+    },
+    {
+      "id": 6,
+      "jugado": false,
+      "signo": "1"
+    },
+    {
+      "id": 7,
+      "jugado": false,
+      "signo": "1"
+    },
+    {
+      "id": 8,
+      "jugado": false,
+      "signo": "1"
+    }
+  ]
+}

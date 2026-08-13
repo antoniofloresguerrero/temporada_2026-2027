@@ -31,6 +31,14 @@
         .btn { border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; background: #28a745; color: white; margin-bottom: 15px; }
         .btn:hover { background: #218838; }
         
+        /* Nuevos estilos para la botonera de archivos */
+        .panel-archivos { display: flex; gap: 15px; margin-bottom: 15px; justify-content: center; }
+        .btn-archivo { border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; color: white; flex: 1; max-width: 300px; }
+        .btn-guardar { background: #17a2b8; }
+        .btn-guardar:hover { background: #138496; }
+        .btn-abrir { background: #6c757d; }
+        .btn-abrir:hover { background: #5a6268; }
+        
         .btn-download { background: #007bff; color: white; display: none; margin-bottom: 20px; width: 100%; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; box-sizing: border-box; }
         .btn-download:hover { background: #0056b3; }
         .alert-info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 6px; font-size: 15px; font-weight: bold; margin-bottom: 20px; display: none; text-align: left; border: 1px solid #bee5eb; }
@@ -86,6 +94,13 @@
     
     <button class="btn" onclick="procesarMatrizUniversalDinamica()">1. Calcular Reducción</button>
 
+    <!-- Nueva sección con los botones para guardar y abrir combinaciones -->
+    <div class="panel-archivos">
+        <button class="btn-archivo btn-guardar" onclick="guardarCombinacionJSON()">Guardar combinación</button>
+        <button class="btn-archivo btn-abrir" onclick="abrirCombinacionJSON()">Abrir combinación</button>
+        <input type="file" id="inputAbrirArchivo" accept=".json" style="display: none;" onchange="procesarArchivoCargado(event)">
+    </div>
+
     <div id="panelEscrutinioInteractivo" class="panel-escrutador">
         <label for="ejemploGanadora">Columna Ganadora (8 signos):</label>
         <input type="text" id="ejemploGanadora" value="121X1211" maxlength="8">
@@ -111,6 +126,100 @@
 
 <script>
 let apuestasCalculadas = [], contadoresNuevos = [], textoTxtDescarga = "";
+
+// --- NUEVAS FUNCIONES PARA GUARDAR Y ABRIR COMBINACIÓN ---
+
+// --- FUNCIONES CORREGIDAS Y VERIFICADAS PARA GUARDAR Y ABRIR ---
+function guardarCombinacionJSON() {
+    let configuracion = {
+        filtros: {
+            minUnos: parseInt(document.getElementById("minUnos").value),
+            maxUnos: parseInt(document.getElementById("maxUnos").value),
+            minDoses: parseInt(document.getElementById("minDoses").value),
+            maxDoses: parseInt(document.getElementById("maxDoses").value),
+            porcentajeCubrir: parseInt(document.getElementById("porcentajeCubrir").value)
+        },
+        partidos: []
+    };
+
+    for (let p = 1; p <= 8; p++) {
+        configuracion.partidos.push({
+            id: p,
+            jugado: document.getElementById("chkP" + p).checked,
+            signo: document.getElementById("sigP" + p).value
+        });
+    }
+
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 2));
+    let downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "combinacion_elige8.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+function abrirCombinacionJSON() {
+    document.getElementById("inputAbrirArchivo").click();
+}
+
+function procesarArchivoCargado(event) {
+    let files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let configuracion = JSON.parse(e.target.result);
+            
+            // 1. Restaurar Filtros numéricos
+            if (configuracion.filtros) {
+                document.getElementById("minUnos").value = configuracion.filtros.minUnos;
+                document.getElementById("maxUnos").value = configuracion.filtros.maxUnos;
+                document.getElementById("minDoses").value = configuracion.filtros.minDoses;
+                document.getElementById("maxDoses").value = configuracion.filtros.maxDoses;
+                document.getElementById("porcentajeCubrir").value = configuracion.filtros.porcentajeCubrir;
+            }
+
+            // 2. Restaurar Pronósticos de los partidos (Checks, Desplegables y Colores)
+            if (configuracion.partidos && Array.isArray(configuracion.partidos)) {
+                configuracion.partidos.forEach(p => {
+                    let chk = document.getElementById("chkP" + p.id);
+                    let sig = document.getElementById("sigP" + p.id);
+                    let card = document.getElementById("cardP" + p.id);
+                    
+                    if (chk && sig) {
+                        chk.checked = p.jugado;
+                        sig.value = p.signo;
+                        
+                        if (p.jugado) {
+                            card.classList.add("activo");
+                        } else {
+                            card.classList.remove("activo");
+                        }
+                    }
+                });
+            }
+            
+            // 3. ¡RESTRICCIONES Y TABLAS AUTOMÁTICAS!
+            // Ejecuta el motor matemático nativo para generar la reducción y rellenar la tabla al instante
+            procesarMatrizUniversalDinamica();
+            
+        } catch (error) {
+            console.error(error);
+            alert("Error al leer el archivo de combinación.");
+        }
+    };
+    reader.readAsText(files[0]); // Extracción correcta del fichero individual
+    event.target.value = ''; 
+}
+// --- FIN DE LAS FUNCIONES CORREGIDAS ---
+
+
+
+
+
+// --- FIN DE LAS NUEVAS FUNCIONES ---
 
 function procesarMatrizUniversalDinamica() {
     let fijosIndices = [];
@@ -185,7 +294,6 @@ function procesarMatrizUniversalDinamica() {
                 candidatos.push(combActual.join(""));
                 return;
             }
-
             if (fijosIndices.indexOf(idxPartid) !== -1) {
                 let opcionesSigno = fijosSignos[idxPartid];
                 for (let s = 0; s < opcionesSigno.length; s++) {
