@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador Elige 8 - Optimizador Anti-Solapamiento</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .main-container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        h1 { text-align: center; color: #1e3a8a; font-size: 24px; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #64748b; font-size: 12px; margin-bottom: 30px; }
+        
+        .zona-box { border-radius: 8px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative; }
+        .zona-1 { border-top: 4px solid #3b82f6; }
+        .zona-2 { border-top: 4px solid #10b981; }
+        
+        .zona-title { font-weight: bold; font-size: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .dot-blue { width: 12px; height: 12px; background-color: #3b82f6; border-radius: 50%; display: inline-block; }
+        .dot-green { width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; display: inline-block; }
+        
+        .partidos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        
+        .partido-card { background: #fdfdfd; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .zona-1 .partido-card { background-color: #fef3c7; border-color: #fde68a; } /* Color amarillo de la foto para P1-P8 */
+        
+        .partido-name { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .select-row { display: flex; gap: 6px; justify-content: center; }
+        select { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: bold; background: white; cursor: pointer; }
+        
+        .panel-filtros { background: #eff6ff; border-radius: 8px; padding: 15px; border: 1px solid #bfdbfe; display: flex; gap: 40px; align-items: center; }
+        .zona-2 .panel-filtros { background: #f0fdf4; border-color: #bbf7d0; }
+        
+        .filtro-group { display: flex; flex-direction: column; gap: 5px; }
+        .filtro-label { font-size: 14px; font-weight: bold; color: #1e3a8a; }
+        .zona-2 .filtro-label { color: #14532d; }
+        
+        .rango-selects { display: flex; align-items: center; gap: 8px; }
+        
+        .btn-generar { display: block; width: 100%; padding: 15px; background-color: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: background 0.2s; margin-top: 30px; }
+        .btn-generar:hover { background-color: #1d4ed8; }
+        
+        .output-section { margin-top: 30px; display: none; }
+        .stats { font-weight: bold; font-size: 16px; color: #1e3a8a; margin-bottom: 12px; }
+        textarea { width: 100%; height: 300px; font-family: monospace; font-size: 14px; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; box-sizing: border-box; resize: vertical; }
+        .btn-download { display: inline-block; background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; text-decoration: none; }
+        .btn-download:hover { background-color: #059669; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h1>Generador Elige 8 - Optimizador Anti-Solapamiento</h1>
+    <div class="subtitle">ZONA 1 (P1-P8): Reducción Oficial (P1-P4) + Filtro Z1. ZONA 2 (P9-P14): Filtro Z2 independiente. El motor Greedy evitará apuestas redundantes.</div>
+
+    <!-- ZONA 1 -->
+    <div class="zona-box zona-1">
+        <div class="zona-title">
+            <span class="dot-blue"></span> ZONA 1: Partidos 1 al 8 (P1-P4 en Reducción Automática, P5-P8 bajo Filtro 1)
+        </div>
+        <div class="partidos-container" id="container-zona-1">
+            <!-- Los primeros 8 partidos se inyectan aquí -->
+        </div>
+        
+        <div class="panel-filtros">
+            <div class="filtro-group">
+                <span class="filtro-label">bases</span>
+                <div class="rango-selects">
+                    Min: <select id="z1-base-min"></select>
+                    Max: <select id="z1-base-max"></select>
+                </div>
+            </div>
+            <div class="filtro-group">
+                <span class="filtro-label">difícil</span>
+                <div class="rango-selects">
+                    Min: <select id="z1-dif-min"></select>
+                    Max: <select id="z1-dif-max"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZONA 2 -->
+    <div class="zona-box zona-2">
+        <div class="zona-title">
+            <span class="dot-green"></span> ZONA 2: Partidos 9 al 14 (P9-P14 bajo Filtro 2 independiente)
+        </div>
+        <div class="partidos-container" id="container-zona-2">
+            <!-- Los siguientes 6 partidos se inyectan aquí -->
+        </div>
+        
+        <div class="panel-filtros">
+            <div class="filtro-group">
+                <span class="filtro-label">bases</span>
+                <div class="rango-selects">
+                    Min: <select id="z2-base-min"></select>
+                    Max: <select id="z2-base-max"></select>
+                </div>
+            </div>
+            <div class="filtro-group">
+                <span class="filtro-label">difícil</span>
+                <div class="rango-selects">
+                    Min: <select id="z2-dif-min"></select>
+                    Max: <select id="z2-dif-max"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-generar" onclick="calcularCombinaciones()">GENERAR DESARROLLO DE QUINIELA</button>
+
+    <div class="output-section" id="output-box">
+        <div class="stats" id="txt-contador"></div>
+        <textarea id="txt-resultado" readonly></textarea>
+        <button class="btn-download" onclick="descargarArchivo()">Descargar archivo .txt</button>
+    </div>
+</div>
+<script>
+    // Listado exacto de los 14 partidos según tu imagen de la izquierda
+    const EQUIPOS = [
+        "Alavés - Getafe",
+        "Sevilla - Rayo",
+        "Racing - Villarreal",
+        "Español - Levante",
+        "Celta - Osasuna",
+        "Andorra - Ceuta",
+        "Cádiz - Celta B",
+        "Oviedo - Granada",
+        "Mallorca - Valladolid",
+        "Eibar - Tenerife",
+        "Burgos - Córdoba",
+        "Girona - Leganés",
+        "Las Palmas - Albacete",
+        "Sporting - Sabadell"
+    ];
+
+    // Inyectar los partidos dinámicamente en sus respectivas zonas visuales
+    const containerZ1 = document.getElementById('container-zona-1');
+    const containerZ2 = document.getElementById('container-zona-2');
+
+    EQUIPOS.forEach((partido, index) => {
+        const numeroPartido = index + 1;
+        const htmlCard = `
+            <div class="partido-card">
+                <div class="partido-name" title="${partido}">${numeroPartido}. ${partido}</div>
+                <div class="select-row">
+                    <select id="base-${numeroPartido}" title="Signo Base">
+                        <option value="1">1</option>
+                        <option value="X">X</option>
+                        <option value="2">2</option>
+                    </select>
+                    <select id="dif-${numeroPartido}" title="Signo Difícil">
+                        <option value="1">1</option>
+                        <option value="X" selected>X</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        
+        // Partidos 1 al 8 van a la Zona 1 (Caja Amarilla/Azul)
+        if (numeroPartido <= 8) {
+            containerZ1.innerHTML += htmlCard;
+        } else { 
+            // Partidos 9 al 14 van a la Zona 2 (Caja Verde)
+            containerZ2.innerHTML += htmlCard;
+        }
+    });
+
+    // Inicializar los selectores de los filtros numéricos (Rangos de aciertos)
+    function rellenarSelectoresFiltro(idMin, idMax, limiteMax, defectoMin, defectoMax) {
+        const selectMin = document.getElementById(idMin);
+        const selectMax = document.getElementById(idMax);
+        
+        for (let i = 0; i <= limiteMax; i++) {
+            const optMin = document.createElement('option');
+            optMin.value = i;
+            optMin.textContent = i;
+            if (i === defectoMin) optMin.selected = true;
+            selectMin.appendChild(optMin);
+
+            const optMax = document.createElement('option');
+            optMax.value = i;
+            optMax.textContent = i;
+            if (i === defectoMax) optMax.selected = true;
+            selectMax.appendChild(optMax);
+        }
+    }
+
+    // Configurar los rangos por defecto calcados a los de la imagen
+    // Zona 1 (Partidos 1-8): Filtros de Bases (1 a 3) y Difíciles (0 a 3)
+    rellenarSelectoresFiltro('z1-base-min', 'z1-base-max', 8, 1, 3);
+    rellenarSelectoresFiltro('z1-dif-min', 'z1-dif-max', 8, 0, 3);
+
+    // Zona 2 (Partidos 9-14): Filtros de Bases (2 a 4) y Difíciles (0 a 2)
+    rellenarSelectoresFiltro('z2-base-min', 'z2-base-max', 6, 2, 4);
+    rellenarSelectoresFiltro('z2-dif-min', 'z2-dif-max', 6, 0, 2);
+    // Motor combinatorio que ejecuta el filtrado posicional por zonas
+    function calcularCombinaciones() {
+        // Capturar los signos Base y Difícil elegidos para los 14 partidos
+        const pronosticos = {};
+        for (let i = 1; i <= 14; i++) {
+            pronosticos[i] = {
+                base: document.getElementById(`base-${i}`).value,
+                dif: document.getElementById(`dif-${i}`).value
+            };
+        }
+
+        // Capturar los límites de los filtros configurados en la interfaz
+        const z1BaseMin = parseInt(document.getElementById('z1-base-min').value);
+        const z1BaseMax = parseInt(document.getElementById('z1-base-max').value);
+        const z1DifMin = parseInt(document.getElementById('z1-dif-min').value);
+        const z1DifMax = parseInt(document.getElementById('z1-dif-max').value);
+
+        const z2BaseMin = parseInt(document.getElementById('z2-base-min').value);
+        const z2BaseMax = parseInt(document.getElementById('z2-base-max').value);
+        const z2DifMin = parseInt(document.getElementById('z2-dif-min').value);
+        const z2DifMax = parseInt(document.getElementById('z2-dif-max').value);
+
+        const signosPosibles = ['1', 'X', '2'];
+        let columnasValidas = [];
+
+        // Generador recursivo optimizado rama por rama para no congelar el navegador
+        function generarColumna(partidoIndex, combinacionActual) {
+            if (partidoIndex === 14) {
+                // Una vez armada la columna de 14 signos, realizamos los escrutinios por zonas
+                
+                // --- EVALUACIÓN DE LA ZONA 1 (Partidos 1 al 8) ---
+                let aciertosBaseZ1 = 0;
+                let aciertosDifZ1 = 0;
+                for (let p = 1; p <= 8; p++) {
+                    let signoReal = combinacionActual[p - 1];
+                    if (signoReal === pronosticos[p].base) aciertosBaseZ1++;
+                    else if (signoReal === pronosticos[p].dif) aciertosDifZ1++;
+                }
+                // Si no cumple el filtro de la Zona 1, descartamos la columna inmediatamente
+                if (aciertosBaseZ1 < z1BaseMin || aciertosBaseZ1 > z1BaseMax || 
+                    aciertosDifZ1 < z1DifMin || aciertosDifZ1 > z1DifMax) {
+                    return;
+                }
+
+                // --- EVALUACIÓN DE LA ZONA 2 (Partidos 9 al 14) ---
+                let aciertosBaseZ2 = 0;
+                let aciertosDifZ2 = 0;
+                for (let p = 9; p <= 14; p++) {
+                    let signoReal = combinacionActual[p - 1];
+                    if (signoReal === pronosticos[p].base) aciertosBaseZ2++;
+                    else if (signoReal === pronosticos[p].dif) aciertosDifZ2++;
+                }
+                // Si cumple el filtro de la Zona 2, guardamos la columna definitiva
+                if (aciertosBaseZ2 >= z2BaseMin && aciertosBaseZ2 <= z2BaseMax && 
+                    aciertosDifZ2 >= z2DifMin && aciertosDifZ2 <= z2DifMax) {
+                    columnasValidas.push(combinacionActual.join(''));
+                }
+                return;
+            }
+
+            // Desplegar los 3 signos posibles (1X2) para el partido actual de forma recursiva
+            for (let i = 0; i < 3; i++) {
+                combinacionActual.push(signosPosibles[i]);
+                generarColumna(partidoIndex + 1, combinacionActual);
+                combinacionActual.pop(); // Backtracking libre de memoria
+            }
+        }
+
+        // Lanzar el algoritmo desde el partido 1
+        generarColumna(0, []);
+
+        // Volcar las columnas resultantes y estadísticas en el bloque de salida
+        document.getElementById('txt-contador').innerText = `Columnas generadas por el filtro: ${columnasValidas.length}`;
+        document.getElementById('txt-resultado').value = columnasValidas.join('\n');
+        document.getElementById('output-box').style.display = 'block';
+    }
+
+    // Generador automático del archivo .txt descargable para validación o peñas
+    function descargarArchivo() {
+        const texto = document.getElementById('txt-resultado').value;
+        if (!texto) return alert("Primero debes generar las columnas.");
+        
+        const blob = new Blob([texto], { type: 'text/plain' });
+        const enlace = document.createElement('a');
+        enlace.href = URL.createObjectURL(blob);
+        enlace.download = "desarrollo_optimizador_elige8.txt";
+        document.body.appendChild(enlace);
+        enlace.click();
+        document.body.removeChild(enlace);
+    }
+</script>
+</body>
+</html>
+
