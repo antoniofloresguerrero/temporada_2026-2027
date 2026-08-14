@@ -2,290 +2,560 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador Elige 8 - Optimizador Anti-Solapamiento</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
-        .main-container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    <title>Elige 8 Avanzado - Pantalla Única</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #eaedf1; color: #1e293b; margin: 0; padding: 12px; box-sizing: border-box; font-size: 12px; }
+        .main-layout { display: flex; gap: 12px; max-width: 1400px; margin: 0 auto; height: calc(100vh - 24px); }
         
-        h1 { text-align: center; color: #1e3a8a; font-size: 24px; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #64748b; font-size: 12px; margin-bottom: 30px; }
+        /* COLUMNA IZQUIERDA: LOS 14 PARTIDOS OPTIMIZADOS */
+        .left-column { flex: 1.4; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 3px; overflow-y: auto; height: 100%; box-sizing: border-box; }
+        .left-column h2 { font-size: 13px; margin: 0 0 6px 0; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; display: flex; justify-content: space-between; }
         
-        .zona-box { border-radius: 8px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0; position: relative; }
-        .zona-1 { border-top: 4px solid #3b82f6; }
-        .zona-2 { border-top: 4px solid #10b981; }
+        /* FILA DE CABECERA SUPERIOR DE TÍTULOS */
+        .cabecera-tabla { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #0b3c5d; color: white; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; text-align: center; letter-spacing: 0.5px; margin-bottom: 2px; }
         
-        .zona-title { font-weight: bold; font-size: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .dot-blue { width: 12px; height: 12px; background-color: #3b82f6; border-radius: 50%; display: inline-block; }
-        .dot-green { width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; display: inline-block; }
+        /* FILA DE PARTIDO ESTRECHA */
+        .fila-partido { display: flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; background: #f8fafc; height: 28px; box-sizing: border-box; }
+        .fila-partido.reducido-manual { background: #fef9c3; border-color: #fde047; }
+        .fila-partido.filtro-manual { background: #f0fdf4; border-color: #bbf7d0; }
         
-        .partidos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .num-p { font-weight: bold; width: 14px; color: #64748b; text-align: center; font-size: 11px; }
+        .chk-label { font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 3px; cursor: pointer; width: 70px; text-align: center; }
+        .chk-reducido { transform: scale(1.05); margin: 0; cursor: pointer; }
         
-        .partido-card { background: #fdfdfd; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .zona-1 .partido-card { background-color: #fef3c7; border-color: #fde68a; } /* Color amarillo de la foto para P1-P8 */
+        /* ANCHO DE EQUIPOS MUY GRANDE */
+        .input-nombre { flex: 2; min-width: 200px; padding: 2px 6px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 500; height: 22px; box-sizing: border-box; }
         
-        .partido-name { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+              /* ANCHOS CORREGIDOS DE ENTRADA DE DATOS (MÁS ANCHOS PARA LEER LAS CUOTAS) */
+        .select-pronostico { padding: 1px 2px; font-size: 11px; font-weight: bold; border-radius: 4px; border: 1px solid #cbd5e1; background: white; width: 48px; text-align: center; height: 22px; box-sizing: border-box; }
+        .cuotas-block { display: flex; gap: 4px; align-items: center; justify-content: center; }
         
-        .select-row { display: flex; gap: 6px; justify-content: center; }
-        select { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: bold; background: white; cursor: pointer; }
+        /* CUOTAS UN POCO MÁS GRANDES PARA QUE QUEPAN LOS DECIMALES PERFECTAMENTE */
+        .input-cuota { width: 42px; padding: 2px 2px; text-align: center; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; height: 22px; box-sizing: border-box; }
+        .info-calculada { font-size: 10px; font-weight: bold; color: #0284c7; background: white; padding: 2px 4px; border-radius: 3px; border: 1px dashed #cbd5e1; width: 85px; text-align: center; box-sizing: border-box; display: inline-block; white-space: nowrap; text-transform: uppercase; }
+
+        /* COLUMNA DERECHA: FILTROS, BOTONES Y ESCRUTINIO */
+        .right-column { flex: 1; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
+        .box-derecho { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 3px solid #0284c7; }
+        .box-derecho.z2 { border-top-color: #10b981; }
+        .box-derecho h3 { font-size: 12px; margin: 0 0 8px 0; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; }
         
-        .panel-filtros { background: #eff6ff; border-radius: 8px; padding: 15px; border: 1px solid #bfdbfe; display: flex; gap: 40px; align-items: center; }
-        .zona-2 .panel-filtros { background: #f0fdf4; border-color: #bbf7d0; }
+        .flex-filtros { display: flex; gap: 12px; justify-content: space-between; }
+        .item-filtro { display: flex; flex-direction: column; gap: 3px; flex: 1; align-items: center; }
+        .item-filtro label { font-weight: bold; font-size: 11px; color: #475569; }
+        .inputs-rango { display: flex; align-items: center; gap: 4px; }
+        .inputs-rango input { width: 38px; padding: 3px; text-align: center; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
+
+        .panel-global { background: #e2e8f0; padding: 8px; border-radius: 6px; display: flex; justify-content: center; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 2px; }
+        .panel-global input { width: 40px; padding: 4px; text-align: center; font-weight: bold; border-radius: 4px; border: 1px solid #cbd5e1; }
+
+        .btn { border: none; padding: 10px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; color: white; background: #2563eb; transition: background 0.15s; margin-bottom: 4px; text-transform: uppercase; }
+        .btn:hover { background: #1d4ed8; }
+        .btn-verde { background: #16a34a; }
+        .btn-verde:hover { background: #15803d; }
+        .btn-morado { background: #7c3aed; }
+        .btn-morado:hover { background: #6d28d9; }
         
-        .filtro-group { display: flex; flex-direction: column; gap: 5px; }
-        .filtro-label { font-size: 14px; font-weight: bold; color: #1e3a8a; }
-        .zona-2 .filtro-label { color: #14532d; }
+        .panel-archivos { display: flex; gap: 6px; }
+        .btn-arch { padding: 6px; font-size: 11px; font-weight: bold; border: none; border-radius: 4px; color: white; flex: 1; cursor: pointer; }
+        .btn-g { background: #0ea5e9; }
+        .btn-a { background: #64748b; }
+
+        /* PANEL ESCRUTADOR INTEGRADO */
+        .panel-escrutador { background: #fef9c3; border: 1px solid #fef08a; display: none; padding: 8px; border-radius: 6px; }
+        .panel-escrutador label { font-weight: bold; color: #713f12; margin-right: 6px; font-size: 11px; }
+        .panel-escrutador input { padding: 4px; width: 150px; font-size: 13px; font-family: monospace; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; letter-spacing: 1px; }
+        .btn-comp { background: #a16207; color: white; border: none; padding: 5px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+        .alert-info { background: #e0f2fe; color: #0369a1; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; display: none; text-align: left; border: 1px solid #bae6fd; line-height: 1.4; }
         
-        .rango-selects { display: flex; align-items: center; gap: 8px; }
-        
-        .btn-generar { display: block; width: 100%; padding: 15px; background-color: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: background 0.2s; margin-top: 30px; }
-        .btn-generar:hover { background-color: #1d4ed8; }
-        
-        .output-section { margin-top: 30px; display: none; }
-        .stats { font-weight: bold; font-size: 16px; color: #1e3a8a; margin-bottom: 12px; }
-        textarea { width: 100%; height: 300px; font-family: monospace; font-size: 14px; padding: 15px; border-radius: 6px; border: 1px solid #cbd5e1; box-sizing: border-box; resize: vertical; }
-        .btn-download { display: inline-block; background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; text-decoration: none; }
-        .btn-download:hover { background-color: #059669; }
+        .tabla-contenedor { flex: 1; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 11px; }
+        th { background-color: #1e293b; color: white; position: sticky; top: 0; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .fila-8 { background-color: #dcfce7 !important; font-weight: bold; color: #166534; }
+        .fila-7 { background-color: #e0f2fe !important; }
+        .total-fila { font-weight: bold; background-color: #f1f5f9 !important; position: sticky; bottom: 0; font-size: 11px; color: #334155; }
     </style>
+
 </head>
 <body>
 
-<div class="main-container">
-    <h1>Generador Elige 8 - Optimizador Anti-Solapamiento</h1>
-    <div class="subtitle">ZONA 1 (P1-P8): Reducción Oficial (P1-P4) + Filtro Z1. ZONA 2 (P9-P14): Filtro Z2 independiente. El motor Greedy evitará apuestas redundantes.</div>
-
-    <!-- ZONA 1 -->
-    <div class="zona-box zona-1">
-        <div class="zona-title">
-            <span class="dot-blue"></span> ZONA 1: Partidos 1 al 8 (P1-P4 en Reducción Automática, P5-P8 bajo Filtro 1)
-        </div>
-        <div class="partidos-container" id="container-zona-1">
-            <!-- Los primeros 8 partidos se inyectan aquí -->
-        </div>
+<div class="main-layout">
+    
+    <!-- COLUMNA IZQUIERDA -->
+     <div class="left-column">
+        <h2><span>⚽ BOLETO COMPACTO</span> <span style="font-size:10px; color:#64748b;">(Exactamente 4 Reducidos)</span></h2>
         
-        <div class="panel-filtros">
-            <div class="filtro-group">
-                <span class="filtro-label">bases</span>
-                <div class="rango-selects">
-                    Min: <select id="z1-base-min"></select>
-                    Max: <select id="z1-base-max"></select>
-                </div>
-            </div>
-            <div class="filtro-group">
-                <span class="filtro-label">difícil</span>
-                <div class="rango-selects">
-                    Min: <select id="z1-dif-min"></select>
-                    Max: <select id="z1-dif-max"></select>
-                </div>
-            </div>
+        <!-- NUEVA CABECERA DE TÍTULOS SUPERIOR -->
+          <div class="cabecera-tabla">
+            <div style="width: 14px;">#</div>
+            <div style="width: 70px;">Reducido</div>
+            <div style="flex: 2; text-align: left; padding-left: 4px;">Partido / Equipos</div>
+            <div style="width: 48px;">Jugado</div>
+            <div style="width: 42px; margin-left: 4px;">C1</div>
+            <div style="width: 42px; margin-left: 4px;">CX</div>
+            <div style="width: 42px; margin-left: 4px;">C2</div>
+            <div style="width: 85px; margin-left: 6px;">Cálculo Automático</div>
+        </div>
+
+        <div id="wrapper-partidos" style="display:flex; flex-direction:column; gap:3px;">
+            <!-- Generado dinámicamente por la Parte 3-A -->
         </div>
     </div>
-
-    <!-- ZONA 2 -->
-    <div class="zona-box zona-2">
-        <div class="zona-title">
-            <span class="dot-green"></span> ZONA 2: Partidos 9 al 14 (P9-P14 bajo Filtro 2 independiente)
-        </div>
-        <div class="partidos-container" id="container-zona-2">
-            <!-- Los siguientes 6 partidos se inyectan aquí -->
-        </div>
+    <!-- COLUMNA DERECHA -->
+    <div class="right-column">
         
-        <div class="panel-filtros">
-            <div class="filtro-group">
-                <span class="filtro-label">bases</span>
-                <div class="rango-selects">
-                    Min: <select id="z2-base-min"></select>
-                    Max: <select id="z2-base-max"></select>
+        <!-- PANELES DE FILTROS BI-ZONA -->
+        <div class="box-derecho">
+            <h3>🔵 TRAMO A: Partidos 1 al 8</h3>
+            <div class="flex-filtros">
+                <div class="item-filtro">
+                    <label>Bases</label>
+                    <div class="inputs-rango">
+                        <input type="number" id="minBasesZ1" value="3"><span>a</span><input type="number" id="maxBasesZ1" value="6">
+                    </div>
                 </div>
-            </div>
-            <div class="filtro-group">
-                <span class="filtro-label">difícil</span>
-                <div class="rango-selects">
-                    Min: <select id="z2-dif-min"></select>
-                    Max: <select id="z2-dif-max"></select>
+                <div class="item-filtro">
+                    <label>Difíciles</label>
+                    <div class="inputs-rango">
+                        <input type="number" id="minDificilesZ1" value="0"><span>a</span><input type="number" id="maxDificilesZ1" value="3">
+                    </div>
+                </div>
+                <div class="item-filtro">
+                    <label style="color:#b91c1c;">UNOS (Filtro)</label>
+                    <div class="inputs-rango">
+                        <input type="number" id="minUnosZ1" value="3"><span>a</span><input type="number" id="maxUnosZ1" value="6">
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="box-derecho z2">
+            <h3>🟢 TRAMO B: Partidos 9 al 14</h3>
+            <div class="flex-filtros">
+                <div class="item-filtro">
+                    <label>Bases</label>
+                    <div class="inputs-rango">
+                        <input type="number" id="minBasesZ2" value="2"><span>a</span><input type="number" id="maxBasesZ2" value="4">
+                    </div>
+                </div>
+                <div class="item-filtro">
+                    <label>Difíciles</label>
+                    <div class="inputs-rango">
+                        <input type="number" id="minDificilesZ2" value="0"><span>a</span><input type="number" id="maxDificilesZ2" value="2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE CONTROL GLOBAL Y ACCIONES -->
+        <div class="box-derecho" style="border-top-color:#475569; padding:8px; display:flex; flex-direction:column; gap:6px;">
+            <div class="panel-global">
+                <label>Cobertura:</label>
+                <input type="number" id="porcentajeCubrir" value="100">%
+                <div class="panel-archivos" style="margin-left:auto; flex:1;">
+                    <button class="btn-arch btn-g" onclick="guardarCombinacionJSON()">Guardar</button>
+                    <button class="btn-arch btn-a" onclick="abrirCombinacionJSON()">Abrir</button>
+                    <input type="file" id="inputAbrirArchivo" accept=".json" style="display: none;" onchange="procesarArchivoCargado(event)">
+                </div>
+            </div>
+
+            <button class="btn btn-verde" onclick="procesarMatrizUniversalDinamica()">1. Calcular Elige 8</button>
+            
+            <div id="panelEscrutinioInteractivo" class="panel-escrutador">
+                <label for="ejemploGanadora">Ganadora Real:</label>
+                <input type="text" id="ejemploGanadora" value="12X21221X1X1X1" maxlength="14">
+                <button class="btn-comp" onclick="ejecutarEscrutinioYOrdenacion()">Escrutar</button>
+            </div>
+
+            <div style="display:flex; gap:6px;">
+                <button id="btnDescarga" class="btn" style="display:none; margin:0;" onclick="descargarTxtUniversal()">2. Descargar .TXT</button>
+                <button id="btnTestMasivo" class="btn btn-morado" style="display:none; margin:0;" onclick="realizar100PruebasMasivas()">3. Test 100 Jornadas</button>
+            </div>
+        </div>
+
+        <div id="infoCartel" class="alert-info"></div>
+
+        <!-- TABLA DE ESCRUTINIO COMPACTA -->
+        <div id="resultadoTabla" class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Apuesta</th>
+                        <th>Desarrollo Elige 8</th>
+                        <th style="text-align:center;">Aciertos</th>
+                        <th>Estatus</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla"></tbody>
+            </table>
+        </div>
     </div>
 
-    <button class="btn-generar" onclick="calcularCombinaciones()">GENERAR DESARROLLO DE QUINIELA</button>
-
-    <div class="output-section" id="output-box">
-        <div class="stats" id="txt-contador"></div>
-        <textarea id="txt-resultado" readonly></textarea>
-        <button class="btn-download" onclick="descargarArchivo()">Descargar archivo .txt</button>
-    </div>
 </div>
 <script>
-    // Listado exacto de los 14 partidos según tu imagen de la izquierda
-    const EQUIPOS = [
-        "Alavés - Getafe",
-        "Sevilla - Rayo",
-        "Racing - Villarreal",
-        "Español - Levante",
-        "Celta - Osasuna",
-        "Andorra - Ceuta",
-        "Cádiz - Celta B",
-        "Oviedo - Granada",
-        "Mallorca - Valladolid",
-        "Eibar - Tenerife",
-        "Burgos - Córdoba",
-        "Girona - Leganés",
-        "Las Palmas - Albacete",
-        "Sporting - Sabadell"
-    ];
+let apuestasCalculadas = [], textoTxtDescarga = "", universoRealCompleto = [];
 
-    // Inyectar los partidos dinámicamente en sus respectivas zonas visuales
-    const containerZ1 = document.getElementById('container-zona-1');
-    const containerZ2 = document.getElementById('container-zona-2');
+// Matriz oficial inalterable de los 4 triples reducidos (9 apuestas perfectas)
+const matrizReduccionOficial = [
+    ["1", "1", "1", "1"],
+    ["1", "X", "X", "X"],
+    ["1", "2", "2", "2"],
+    ["X", "1", "X", "2"],
+    ["X", "X", "2", "1"],
+    ["X", "2", "1", "X"],
+    ["2", "1", "2", "X"],
+    ["2", "X", "1", "2"],
+    ["2", "2", "X", "1"]
+];
 
-    EQUIPOS.forEach((partido, index) => {
-        const numeroPartido = index + 1;
-        const htmlCard = `
-            <div class="partido-card">
-                <div class="partido-name" title="${partido}">${numeroPartido}. ${partido}</div>
-                <div class="select-row">
-                    <select id="base-${numeroPartido}" title="Signo Base">
-                        <option value="1">1</option>
-                        <option value="X">X</option>
-                        <option value="2">2</option>
-                    </select>
-                    <select id="dif-${numeroPartido}" title="Signo Difícil">
-                        <option value="1">1</option>
-                        <option value="X" selected>X</option>
-                        <option value="2">2</option>
-                    </select>
-                </div>
+// Dibujar las 14 filas compactas de los partidos en la izquierda
+
+// Bucle optimizado que dibuja las filas compactas con las nuevas medidas y clases de ancho
+const wrapper = document.getElementById('wrapper-partidos');
+const nombresDefecto = [
+    "Alavés - Getafe", "Sevilla - Rayo", "Racing - Villarreal", "Español - Levante",
+    "Celta - Osasuna", "Andorra - Ceuta", "Cádiz - Celta B", "Oviedo - Granada",
+    "Mallorca - Valladolid", "Eibar - Tenerife", "Burgos - Córdoba", "Girona - Leganés",
+    "Las Palmas - Albacete", "Sporting - Sabadell"
+];
+
+for(let p=1; p<=14; p++) {
+    let esReducidoDefault = p <= 4;
+    let claseCard = esReducidoDefault ? 'fila-partido reducido-manual' : 'fila-partido filtro-manual';
+    let checkedStr = esReducidoDefault ? 'checked' : '';
+
+    wrapper.innerHTML += `
+        <div class="${claseCard}" id="cardP${p}">
+            <span class="num-p">${p}</span>
+            <label class="chk-label">
+                <input type="checkbox" class="chk-reducido" data-id="${p}" ${checkedStr} onchange="gestionarCambioReduccion(${p})"> Reducido
+            </label>
+            <input type="text" id="nombreP${p}" class="input-nombre" value="${nombresDefecto[p-1]}">
+            <select id="proP${p}" class="select-pronostico">
+                <option value="1">1</option><option value="X">X</option><option value="2">2</option>
+                <option value="1X">1X</option><option value="12">12</option><option value="X2">X2</option>
+                <option value="1X2" selected>1X2</option>
+            </select>
+            <div class="cuotas-block">
+                <input type="number" id="c1_P${p}" class="input-cuota" value="${p<=8?'2.10':'1.85'}" step="0.01" onchange="calcularLogicaCuota(${p})">
+                <input type="number" id="cX_P${p}" class="input-cuota" value="${p<=8?'3.20':'3.30'}" step="0.01" onchange="calcularLogicaCuota(${p})">
+                <input type="number" id="c2_P${p}" class="input-cuota" value="${p<=8?'3.40':'4.20'}" step="0.01" onchange="calcularLogicaCuota(${p})">
             </div>
-        `;
-        
-        // Partidos 1 al 8 van a la Zona 1 (Caja Amarilla/Azul)
-        if (numeroPartido <= 8) {
-            containerZ1.innerHTML += htmlCard;
-        } else { 
-            // Partidos 9 al 14 van a la Zona 2 (Caja Verde)
-            containerZ2.innerHTML += htmlCard;
+            <div id="infoCuotaP${p}" class="info-calculada">Base: 1 | Dif: 2</div>
+        </div>
+    `;
+}
+
+
+function gestionarCambioReduccion(id) {
+    let checkboxes = document.querySelectorAll('.chk-reducido');
+    let marcados = Array.from(checkboxes).filter(c => c.checked);
+    if (marcados.length > 4) {
+        alert("Selecciona exactamente 4 partidos para la Reducción.");
+        document.querySelector(`.chk-reducido[data-id="${id}"]`).checked = false;
+        return;
+    }
+    checkboxes.forEach(c => {
+        let pId = c.dataset.id;
+        let card = document.getElementById(`cardP${pId}`);
+        card.className = c.checked ? "fila-partido reducido-manual" : "fila-partido filtro-manual";
+    });
+}
+
+function calcularLogicaCuota(p) {
+    let c1 = parseFloat(document.getElementById(`c1_P${p}`).value) || 999;
+    let cX = parseFloat(document.getElementById(`cX_P${p}`).value) || 999;
+    let c2 = parseFloat(document.getElementById(`c2_P${p}`).value) || 999;
+    let arr = [{ s: "1", v: c1 }, { s: "X", v: cX }, { s: "2", v: c2 }];
+    arr.sort((a, b) => a.v - b.v);
+    document.getElementById(`infoCuotaP${p}`).innerHTML = `Base: <b>${arr[0].s}</b> | Dif: <b>${arr[2].s}</b>`;
+    return { base: arr[0].s, dificil: arr[2].s };
+}
+
+for (let p = 1; p <= 14; p++) { calcularLogicaCuota(p); }
+
+// --- FUNCIÓN DE GUARDADO COMPLETO (Guarda absolutamente todo) ---
+function guardarCombinacionJSON() {
+    let reducidosIds = Array.from(document.querySelectorAll('.chk-reducido')).filter(c => c.checked).map(c => parseInt(c.dataset.id));
+    
+    let configuracion = {
+        reducidos: reducidosIds,
+        filtrosGlobales: {
+            minBasesZ1: parseInt(document.getElementById("minBasesZ1").value),
+            maxBasesZ1: parseInt(document.getElementById("maxBasesZ1").value),
+            minDifZ1: parseInt(document.getElementById("minDificilesZ1").value),
+            maxDifZ1: parseInt(document.getElementById("maxDificilesZ1").value),
+            minUnosZ1: parseInt(document.getElementById("minUnosZ1").value),
+            maxUnosZ1: parseInt(document.getElementById("maxUnosZ1").value),
+            minBasesZ2: parseInt(document.getElementById("minBasesZ2").value),
+            maxBasesZ2: parseInt(document.getElementById("maxBasesZ2").value),
+            minDifZ2: parseInt(document.getElementById("minDificilesZ2").value),
+            maxDifZ2: parseInt(document.getElementById("maxDificilesZ2").value)
+        },
+        global: { porcentajeCubrir: parseInt(document.getElementById("porcentajeCubrir").value) },
+        partidos: []
+    };
+
+    // Almacenamos el estado exacto de cada uno de los 14 casilleros
+    for (let p = 1; p <= 14; p++) {
+        configuracion.partidos.push({
+            id: p,
+            nombre: document.getElementById("nombreP" + p).value,
+            pronostico: document.getElementById("proP" + p).value, // <-- Signos (1, X, 2, 1X, 1X2...)
+            c1: document.getElementById("c1_P" + p).value,
+            cX: document.getElementById("cX_P" + p).value,
+            c2: document.getElementById("c2_P" + p).value
+        });
+    }
+
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 2));
+    let dl = document.createElement('a'); 
+    dl.setAttribute("href", dataStr); 
+    dl.setAttribute("download", "config_elige8_completa.json"); 
+    dl.click();
+}
+
+function abrirCombinacionJSON() { document.getElementById("inputAbrirArchivo").click(); }
+
+// --- FUNCIÓN DE APERTURA INTEGRAL (Restaura signos, cuotas y nombres) ---
+// --- FUNCIÓN DE APERTURA INTEGRAL CORREGIDA (Evita el error de parámetro Blob) ---
+function procesarArchivoCargado(event) {
+    // Capturar el elemento input que lanzó el evento de forma segura
+    let input = event.target;
+    if (!input || !input.files || input.files.length === 0) {
+        return; // Si no hay archivo seleccionado, salimos pacíficamente sin dar error
+    }
+
+    // Extraemos el primer archivo válido de la lista
+    let archivoSeleccionado = input.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(e) {
+        try {
+            let config = JSON.parse(e.target.result);
+            
+            // 1. Restaurar las casillas de verificación de la reducción libre
+            if (config.reducidos) {
+                document.querySelectorAll('.chk-reducido').forEach(c => {
+                    c.checked = config.reducidos.includes(parseInt(c.dataset.id));
+                });
+                gestionarCambioReduccion(1); // Refrescar los colores amarillo/azul de las tarjetas
+            }
+
+            // 2. Restaurar todos los inputs de los filtros del Tramo A
+            if (config.filtrosGlobales) {
+                document.getElementById("minBasesZ1").value = config.filtrosGlobales.minBasesZ1;
+                document.getElementById("maxBasesZ1").value = config.filtrosGlobales.maxBasesZ1;
+                document.getElementById("minDificilesZ1").value = config.filtrosGlobales.minDifZ1;
+                document.getElementById("maxDificilesZ1").value = config.filtrosGlobales.maxDifZ1;
+                document.getElementById("minUnosZ1").value = config.filtrosGlobales.minUnosZ1;
+                document.getElementById("maxUnosZ1").value = config.filtrosGlobales.maxUnosZ1;
+                
+                // 3. Restaurar todos los inputs de los filtros del Tramo B
+                document.getElementById("minBasesZ2").value = config.filtrosGlobales.minBasesZ2;
+                document.getElementById("maxBasesZ2").value = config.filtrosGlobales.maxBasesZ2;
+                document.getElementById("minDificilesZ2").value = config.filtrosGlobales.minDifZ2;
+                document.getElementById("maxDificilesZ2").value = config.filtrosGlobales.maxDifZ2;
+            }
+            
+            // 4. Cobertura global
+            if (config.global) {
+                document.getElementById("porcentajeCubrir").value = config.global.porcentajeCubrir;
+            }
+            
+            // 5. Restaurar de forma estricta cada fila de partido con sus desplegables y cuotas
+            if (config.partidos) {
+                config.partidos.forEach(p => {
+                    let nombreCampo = document.getElementById("nombreP" + p.id);
+                    let pronosticoCampo = document.getElementById("proP" + p.id);
+                    let c1Campo = document.getElementById("c1_P" + p.id);
+                    let cXCampo = document.getElementById("cX_P" + p.id);
+                    let c2Campo = document.getElementById("c2_P" + p.id);
+
+                    if (nombreCampo) nombreCampo.value = p.nombre; 
+                    if (pronosticoCampo) pronosticoCampo.value = p.pronostico; // Restaura el signo exacto (1, X, 2, 1X...)
+                    if (c1Campo) c1Campo.value = p.c1; 
+                    if (cXCampo) cXCampo.value = p.cX; 
+                    if (c2Campo) c2Campo.value = p.c2;
+                    
+                    calcularLogicaCuota(p.id); // Forzar recálculo inmediato de Bases y Difíciles en pantalla
+                });
+            }
+            
+            // 6. Lanzar el cálculo automático de apuestas inmediatamente tras la importación exitosa
+            procesarMatrizUniversalDinamica();
+            
+        } catch (error) { 
+            alert("Error al procesar el JSON: Comprueba que el archivo no esté corrupto."); 
         }
+    };
+
+    // Pasamos el parámetro Blob de forma segura garantizando que existe en la memoria
+    reader.readAsText(archivoSeleccionado);
+    
+    // Limpiar el valor del input para permitir cargar el mismo archivo consecutivamente si se desea
+    input.value = '';
+}
+
+
+
+
+function procesarMatrizUniversalDinamica() {
+    let checkboxes = document.querySelectorAll('.chk-reducido');
+    let partidosReducidos = Array.from(checkboxes).filter(c => c.checked).map(c => parseInt(c.dataset.id));
+    if (partidosReducidos.length !== 4) { alert("Selecciona exactamente 4 partidos reducidos."); return; }
+
+    let minBasesZ1 = parseInt(document.getElementById("minBasesZ1").value), maxBasesZ1 = parseInt(document.getElementById("maxBasesZ1").value);
+    let minDifZ1 = parseInt(document.getElementById("minDificilesZ1").value), maxDifZ1 = parseInt(document.getElementById("maxDificilesZ1").value);
+    let minUnosZ1 = parseInt(document.getElementById("minUnosZ1").value), maxUnosZ1 = parseInt(document.getElementById("maxUnosZ1").value);
+    let minBasesZ2 = parseInt(document.getElementById("minBasesZ2").value), maxBasesZ2 = parseInt(document.getElementById("maxBasesZ2").value);
+    let minDifZ2 = parseInt(document.getElementById("minDificilesZ2").value), maxDifZ2 = parseInt(document.getElementById("maxDificilesZ2").value);
+    let pctObjetivo = parseInt(document.getElementById("porcentajeCubrir").value);
+
+    let cartel = document.getElementById("infoCartel"); cartel.style.display = "block";
+    cartel.innerHTML = "<b>⏳ Generando universo adaptativo completo...</b>";
+
+    let mapaCuotas = {}, opcionesPronostico = {};
+    for (let p = 1; p <= 14; p++) {
+        mapaCuotas[p] = calcularLogicaCuota(p);
+        opcionesPronostico[p] = document.getElementById("proP" + p).value === "1X2" ? ["1", "X", "2"] : document.getElementById("proP" + p).value.split("");
+    }
+
+    let filtrosTramoA = [], filtrosTramoB = [];
+    for (let p = 1; p <= 14; p++) {
+        if (!partidosReducidos.includes(p)) { if (p <= 8) filtrosTramoA.push(p); else filtrosTramoB.push(p); }
+    }
+
+    universoRealCompleto = [];
+    let signos1X2 = ["1", "X", "2"];
+
+    for (let r = 0; r < matrizReduccionOficial.length; r++) {
+        let bloqueReducido9 = matrizReduccionOficial[r];
+        function desglosarBoletoCompleto(partidoIdx, combActual) {
+            if (partidoIdx === 15) { universoRealCompleto.push(combActual.join("")); return; }
+            if (partidosReducidos.includes(partidoIdx)) {
+                let signoRed = bloqueReducido9[partidosReducidos.indexOf(partidoIdx)];
+                if (opcionesPronostico[partidoIdx].includes(signoRed)) {
+                    combActual.push(signoRed); desglosarBoletoCompleto(partidoIdx + 1, combActual); combActual.pop();
+                }
+            } else {
+                let sPermitidos = opcionesPronostico[partidoIdx];
+                for (let i = 0; i < sPermitidos.length; i++) {
+                    combActual.push(sPermitidos[i]); desglosarBoletoCompleto(partidoIdx + 1, combActual); combActual.pop();
+                }
+            }
+        }
+        desglosarBoletoCompleto(1, []);
+    }
+
+    let candidatosConHuecos = [];
+    let todosPartidosFiltro = filtrosTramoA.concat(filtrosTramoB);
+    for (let i = 0; i < universoRealCompleto.length; i++) {
+        let colOriginal = universoRealCompleto[i].split("");
+        colOriginal[partidosReducidos[i % 4] - 1] = "_";
+        for (let h = 0; h < 5; h++) { colOriginal[todosPartidosFiltro[(i + h) % todosPartidosFiltro.length] - 1] = "_"; }
+        candidatosConHuecos.push(colOriginal.join(""));
+    }
+    candidatosConHuecos = Array.from(new Set(candidatosConHuecos));
+
+    candidatosConHuecos.sort((a, b) => {
+        function evaluarAfinidad(col) {
+            let bZ1 = 0, dZ1 = 0, uZ1 = 0;
+            filtrosTramoA.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ1++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ1++; if(col[pf-1]==="1") uZ1++; } });
+            let bZ2 = 0, dZ2 = 0;
+            filtrosTramoB.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ2++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ2++; } });
+            let pts = 0;
+            if(bZ1>=minBasesZ1 && bZ1<=maxBasesZ1) pts+=10; if(dZ1>=minDifZ1 && dZ1<=maxDifZ1) pts+=10; if(uZ1>=minUnosZ1 && uZ1<=maxUnosZ1) pts+=20;
+            if(bZ2>=minBasesZ2 && bZ2<=maxBasesZ2) pts+=10; if(dZ2>=minDifZ2 && dZ2<=maxDifZ2) pts+=10;
+            return pts;
+        }
+        return evaluarAfinidad(b) - evaluarAfinidad(a);
     });
 
-    // Inicializar los selectores de los filtros numéricos (Rangos de aciertos)
-    function rellenarSelectoresFiltro(idMin, idMax, limiteMax, defectoMin, defectoMax) {
-        const selectMin = document.getElementById(idMin);
-        const selectMax = document.getElementById(idMax);
-        
-        for (let i = 0; i <= limiteMax; i++) {
-            const optMin = document.createElement('option');
-            optMin.value = i;
-            optMin.textContent = i;
-            if (i === defectoMin) optMin.selected = true;
-            selectMin.appendChild(optMin);
+    let cubiertos = new Array(universoRealCompleto.length).fill(false); apuestasCalculadas = [];
+    let totalCubiertos = 0, columnasObjetivo = Math.ceil((universoRealCompleto.length * pctObjetivo) / 100);
 
-            const optMax = document.createElement('option');
-            optMax.value = i;
-            optMax.textContent = i;
-            if (i === defectoMax) optMax.selected = true;
-            selectMax.appendChild(optMax);
+    document.getElementById("btnDescarga").style.display = "none"; document.getElementById("btnTestMasivo").style.display = "none";
+
+    function ejecutarPasoGreedy() {
+        if (totalCubiertos >= columnasObjetivo || totalCubiertos >= universoRealCompleto.length || candidatosConHuecos.length === 0) {
+            cartel.innerHTML = `<b>✅ Completado!</b> Universo: <b>${universoRealCompleto.length}</b> | Apuestas: <span style="color:#16a34a; font-size:14px;"><b>${apuestasCalculadas.length}</b></span>`;
+            document.getElementById("panelEscrutinioInteractivo").style.display = "block";
+            document.getElementById("btnDescarga").style.display = "inline-block"; document.getElementById("btnTestMasivo").style.display = "inline-block";
+            ejecutarEscrutinioYOrdenacion(); return;
         }
-    }
-
-    // Configurar los rangos por defecto calcados a los de la imagen
-    // Zona 1 (Partidos 1-8): Filtros de Bases (1 a 3) y Difíciles (0 a 3)
-    rellenarSelectoresFiltro('z1-base-min', 'z1-base-max', 8, 1, 3);
-    rellenarSelectoresFiltro('z1-dif-min', 'z1-dif-max', 8, 0, 3);
-
-    // Zona 2 (Partidos 9-14): Filtros de Bases (2 a 4) y Difíciles (0 a 2)
-    rellenarSelectoresFiltro('z2-base-min', 'z2-base-max', 6, 2, 4);
-    rellenarSelectoresFiltro('z2-dif-min', 'z2-dif-max', 6, 0, 2);
-    // Motor combinatorio que ejecuta el filtrado posicional por zonas
-    function calcularCombinaciones() {
-        // Capturar los signos Base y Difícil elegidos para los 14 partidos
-        const pronosticos = {};
-        for (let i = 1; i <= 14; i++) {
-            pronosticos[i] = {
-                base: document.getElementById(`base-${i}`).value,
-                dif: document.getElementById(`dif-${i}`).value
-            };
-        }
-
-        // Capturar los límites de los filtros configurados en la interfaz
-        const z1BaseMin = parseInt(document.getElementById('z1-base-min').value);
-        const z1BaseMax = parseInt(document.getElementById('z1-base-max').value);
-        const z1DifMin = parseInt(document.getElementById('z1-dif-min').value);
-        const z1DifMax = parseInt(document.getElementById('z1-dif-max').value);
-
-        const z2BaseMin = parseInt(document.getElementById('z2-base-min').value);
-        const z2BaseMax = parseInt(document.getElementById('z2-base-max').value);
-        const z2DifMin = parseInt(document.getElementById('z2-dif-min').value);
-        const z2DifMax = parseInt(document.getElementById('z2-dif-max').value);
-
-        const signosPosibles = ['1', 'X', '2'];
-        let columnasValidas = [];
-
-        // Generador recursivo optimizado rama por rama para no congelar el navegador
-        function generarColumna(partidoIndex, combinacionActual) {
-            if (partidoIndex === 14) {
-                // Una vez armada la columna de 14 signos, realizamos los escrutinios por zonas
-                
-                // --- EVALUACIÓN DE LA ZONA 1 (Partidos 1 al 8) ---
-                let aciertosBaseZ1 = 0;
-                let aciertosDifZ1 = 0;
-                for (let p = 1; p <= 8; p++) {
-                    let signoReal = combinacionActual[p - 1];
-                    if (signoReal === pronosticos[p].base) aciertosBaseZ1++;
-                    else if (signoReal === pronosticos[p].dif) aciertosDifZ1++;
-                }
-                // Si no cumple el filtro de la Zona 1, descartamos la columna inmediatamente
-                if (aciertosBaseZ1 < z1BaseMin || aciertosBaseZ1 > z1BaseMax || 
-                    aciertosDifZ1 < z1DifMin || aciertosDifZ1 > z1DifMax) {
-                    return;
-                }
-
-                // --- EVALUACIÓN DE LA ZONA 2 (Partidos 9 al 14) ---
-                let aciertosBaseZ2 = 0;
-                let aciertosDifZ2 = 0;
-                for (let p = 9; p <= 14; p++) {
-                    let signoReal = combinacionActual[p - 1];
-                    if (signoReal === pronosticos[p].base) aciertosBaseZ2++;
-                    else if (signoReal === pronosticos[p].dif) aciertosDifZ2++;
-                }
-                // Si cumple el filtro de la Zona 2, guardamos la columna definitiva
-                if (aciertosBaseZ2 >= z2BaseMin && aciertosBaseZ2 <= z2BaseMax && 
-                    aciertosDifZ2 >= z2DifMin && aciertosDifZ2 <= z2DifMax) {
-                    columnasValidas.push(combinacionActual.join(''));
-                }
-                return;
+        cartel.innerHTML = `<b>⚙️ Optimizando:</b> ${((totalCubiertos/columnasObjetivo)*100).toFixed(0)}% | Apuestas: ${apuestasCalculadas.length}`;
+        let mejorCandidatoIdx = -1, maxNuevosCubiertos = -1;
+        for (let c = 0; c < candidatosConHuecos.length; c++) {
+            let lh = candidatosConHuecos[c], nuevos = 0;
+            for (let u = 0; u < universoRealCompleto.length; u++) {
+                if (cubiertos[u]) continue;
+                let cr = universoRealCompleto[u], coin = true;
+                for (let p = 0; p < 14; p++) { if (lh[p] !== "_" && lh[p] !== cr[p]) { coin = false; break; } }
+                if (coin) nuevos++;
             }
-
-            // Desplegar los 3 signos posibles (1X2) para el partido actual de forma recursiva
-            for (let i = 0; i < 3; i++) {
-                combinacionActual.push(signosPosibles[i]);
-                generarColumna(partidoIndex + 1, combinacionActual);
-                combinacionActual.pop(); // Backtracking libre de memoria
-            }
+            if (nuevos > maxNuevosCubiertos) { maxNuevosCubiertos = nuevos; mejorCandidatoIdx = c; if (nuevos >= 4 && c < 300) break; }
         }
-
-        // Lanzar el algoritmo desde el partido 1
-        generarColumna(0, []);
-
-        // Volcar las columnas resultantes y estadísticas en el bloque de salida
-        document.getElementById('txt-contador').innerText = `Columnas generadas por el filtro: ${columnasValidas.length}`;
-        document.getElementById('txt-resultado').value = columnasValidas.join('\n');
-        document.getElementById('output-box').style.display = 'block';
+        if (mejorCandidatoIdx === -1 || maxNuevosCubiertos <= 0) mejorCandidatoIdx = 0;
+        let le = candidatosConHuecos[mejorCandidatoIdx]; apuestasCalculadas.push(le);
+        for (let u = 0; u < universoRealCompleto.length; u++) {
+            if (cubiertos[u]) continue;
+            let cr = universoRealCompleto[u], coin = true;
+            for (let p = 0; p < 14; p++) { if (le[p] !== "_" && le[p] !== cr[p]) { coin = false; break; } }
+            if (coin) { cubiertos[u] = true; totalCubiertos++; }
+        }
+        candidatosConHuecos.splice(mejorCandidatoIdx, 1); setTimeout(ejecutarPasoGreedy, 1);
     }
+    setTimeout(ejecutarPasoGreedy, 50);
+}
 
-    // Generador automático del archivo .txt descargable para validación o peñas
-    function descargarArchivo() {
-        const texto = document.getElementById('txt-resultado').value;
-        if (!texto) return alert("Primero debes generar las columnas.");
-        
-        const blob = new Blob([texto], { type: 'text/plain' });
-        const enlace = document.createElement('a');
-        enlace.href = URL.createObjectURL(blob);
-        enlace.download = "desarrollo_optimizador_elige8.txt";
-        document.body.appendChild(enlace);
-        enlace.click();
-        document.body.removeChild(enlace);
+function ejecutarEscrutinioYOrdenacion() {
+    let ganadora = document.getElementById("ejemploGanadora").value.trim().toUpperCase().split("");
+    if (ganadora.length !== 14) return;
+    let registros = [];
+    for (let i = 0; i < apuestasCalculadas.length; i++) {
+        let jug = apuestasCalculadas[i].split(""), pts = 0;
+        for (let p = 0; p < 14; p++) { if (jug[p] !== "_" && jug[p] === ganadora[p]) pts++; }
+        registros.push({ linea: apuestasCalculadas[i], puntos: pts });
     }
+    registros.sort((a, b) => b.puntos - a.puntos);
+    let cuerpo = document.getElementById("cuerpoTabla"), html = "", lineasTxt = ["// ELIGE 8 COMPACTO ADAPTATIVO", ""];
+    for (let i = 0; i < registros.length; i++) {
+        let item = registros[i];
+        let clase = item.puntos === 8 ? 'class="fila-8"' : (item.puntos === 7 ? 'class="fila-7"' : '');
+        html += `<tr ${clase}><td><b>#${i+1}</b></td><td><b>${item.linea.split("").join(" ")}</b></td><td style="text-align:center;"><b>${item.puntos}/8</b></td><td>${item.puntos===8?'<b>¡Elige 8!</b>':(item.puntos===7?'Arrastre':'No')}</td></tr>`;
+        lineasTxt.push(item.linea);
+    }
+    cuerpo.innerHTML = html; textoTxtDescarga = lineasTxt.join("\r\n");
+    document.getElementById("resultadoTabla").style.display = "block";
+}
+
+function realizar100PruebasMasivas() {
+    let jPrueba = [], copia = [...universoRealCompleto], total = Math.min(100, copia.length);
+    for (let i = 0; i < total; i++) { let idx = Math.floor(Math.random()*copia.length); jPrueba.push(copia[idx]); copia.splice(idx,1); }
+    let e8 = 0, e7 = 0;
+    for (let j = 0; j < jPrueba.length; j++) {
+        let gan = jPrueba[j].split(""), maxP = 0;
+        for (let a = 0; a < apuestasCalculadas.length; a++) {
+            let jug = apuestasCalculadas[a].split(""), pts = 0;
+            for (let p = 0; p < 14; p++) { if (jug[p] !== "_" && jug[p] === gan[p]) pts++; }
+            if (pts > maxP) maxP = pts;
+        }
+        if (maxP === 8) e8++; else if (maxP === 7) e7++;
+    }
+    let cab = ["// JORNADAS AUDITORÍA COMPACTA", ""], lineas = cab.concat(jPrueba);
+    let blob = new Blob([lineas.join("\r\n")], { type: "text/plain;charset=utf-8" });
+    let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "100_jornadas_compactas.txt"; a.click();
+    document.getElementById("infoCartel").innerHTML = `<b>📊 TEST 100 JORNADAS:</b> Eficacia: <span style="color:#16a34a;font-size:13px;"><b>${((e8/total)*100).toFixed(1)}% (${e8}/${total}) con 8 aciertos</b></span>. Arrastres de 7: ${e7}. Archivo descargado.`;
+}
+
+function descargarTxtUniversal() {
+    let blob = new Blob([textoTxtDescarga], { type: "text/plain;charset=utf-8" });
+    let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "apuestas_elige8_compactas.txt"; link.click();
+}
 </script>
 </body>
 </html>
