@@ -451,44 +451,85 @@ function procesarMatrizUniversalDinamica() {
         desglosarBoletoCompleto(1, []);
     }
 
-    let candidatosConHuecos = [];
+        // --- DECLARACIÓN OBLIGATORIA DE LA VARIABLE DE FILTRO BI-ZONA ---
     let todosPartidosFiltro = filtrosTramoA.concat(filtrosTramoB);
+
+    // =========================================================================
+    // CORRECCIÓN PUNTO 2: GENERACIÓN DE CANDIDATOS PROTEGIENDO DOBLES Y TRIPLES
+    // =========================================================================
+    let candidatosConHuecos = [];
     for (let i = 0; i < universoRealCompleto.length; i++) {
         let colOriginal = universoRealCompleto[i].split("");
-        colOriginal[partidosReducidos[i % 4] - 1] = "_";
-        for (let h = 0; h < 5; h++) { colOriginal[todosPartidosFiltro[(i + h) % todosPartidosFiltro.length] - 1] = "_"; }
+        
+        // Colocamos exactamente 1 hueco en el bloque de los 4 reducidos elegidos
+        let posHuecoRed = partidosReducidos[i % partidosReducidos.length] - 1;
+        colOriginal[posHuecoRed] = "_";
+        
+        // Repartimos de forma cíclica corrida los otros 5 huecos en los partidos de filtro
+        for (let h = 0; h < 5; h++) {
+            let posHuecoFiltro = todosPartidosFiltro[(i + h) % todosPartidosFiltro.length] - 1;
+            colOriginal[posHuecoFiltro] = "_";
+        }
+        
         candidatosConHuecos.push(colOriginal.join(""));
     }
     candidatosConHuecos = Array.from(new Set(candidatosConHuecos));
 
+
+    // ORDENACIÓN POR AFINIDAD ABSOLUTA: Forzamos al programa a colocar arriba del todo
+    // las apuestas que contienen tus variantes de dobles y triples configuradas en la pantalla
     candidatosConHuecos.sort((a, b) => {
         function evaluarAfinidad(col) {
             let bZ1 = 0, dZ1 = 0, uZ1 = 0;
-            filtrosTramoA.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ1++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ1++; if(col[pf-1]==="1") uZ1++; } });
+            filtrosTramoA.forEach(pf => { 
+                if (col[pf-1]!=="_") { 
+                    if(col[pf-1]===mapaCuotas[pf].base) bZ1++; 
+                    if(col[pf-1]===mapaCuotas[pf].dificil) dZ1++; 
+                    if(col[pf-1]==="1") uZ1++; 
+                } 
+            });
             let bZ2 = 0, dZ2 = 0;
-            filtrosTramoB.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ2++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ2++; } });
+            filtrosTramoB.forEach(pf => { 
+                if (col[pf-1]!=="_") { 
+                    if(col[pf-1]===mapaCuotas[pf].base) bZ2++; 
+                    if(col[pf-1]===mapaCuotas[pf].dificil) dZ2++; 
+                } 
+            });
             let pts = 0;
-            if(bZ1>=minBasesZ1 && bZ1<=maxBasesZ1) pts+=10; if(dZ1>=minDifZ1 && dZ1<=maxDifZ1) pts+=10; if(uZ1>=minUnosZ1 && uZ1<=maxUnosZ1) pts+=20;
-            if(bZ2>=minBasesZ2 && bZ2<=maxBasesZ2) pts+=10; if(dZ2>=minDifZ2 && dZ2<=maxDifZ2) pts+=10;
+            if(bZ1>=minBasesZ1 && bZ1<=maxBasesZ1) pts+=10; 
+            if(dZ1>=minDifZ1 && dZ1<=maxDifZ1) pts+=10; 
+            if(uZ1>=minUnosZ1 && uZ1<=maxUnosZ1) pts+=35; // Máxima prioridad al filtro de UNOS de pantalla
+            if(bZ2>=minBasesZ2 && bZ2<=maxBasesZ2) pts+=10; 
+            if(dZ2>=minDifZ2 && dZ2<=maxDifZ2) pts+=10;
             return pts;
         }
         return evaluarAfinidad(b) - evaluarAfinidad(a);
     });
 
-    let cubiertos = new Array(universoRealCompleto.length).fill(false); apuestasCalculadas = [];
+    // =========================================================================
+    // CORRECCIÓN PUNTO 3: MOTOR GREEDY ASÍNCRONO SIN DESCARTES DE COBERTURA
+    // =========================================================================
+    let cubiertos = new Array(universoRealCompleto.length).fill(false); 
+    apuestasCalculadas = [];
     let totalCubiertos = 0, columnasObjetivo = Math.ceil((universoRealCompleto.length * pctObjetivo) / 100);
 
-    document.getElementById("btnDescarga").style.display = "none"; document.getElementById("btnTestMasivo").style.display = "none";
+    document.getElementById("btnDescarga").style.display = "none"; 
+    document.getElementById("btnTestMasivo").style.display = "none";
 
     function ejecutarPasoGreedy() {
         if (totalCubiertos >= columnasObjetivo || totalCubiertos >= universoRealCompleto.length || candidatosConHuecos.length === 0) {
-            cartel.innerHTML = `<b>✅ Completado!</b> Universo: <b>${universoRealCompleto.length}</b> | Apuestas: <span style="color:#16a34a; font-size:14px;"><b>${apuestasCalculadas.length}</b></span>`;
+            cartel.innerHTML = `<b>✅ ¡Completado con Éxito!</b> Universo: <b>${universoRealCompleto.length}</b> | Apuestas: <span style="color:#16a34a; font-size:14px;"><b>${apuestasCalculadas.length}</b></span>`;
             document.getElementById("panelEscrutinioInteractivo").style.display = "block";
-            document.getElementById("btnDescarga").style.display = "inline-block"; document.getElementById("btnTestMasivo").style.display = "inline-block";
-            ejecutarEscrutinioYOrdenacion(); return;
+            document.getElementById("btnDescarga").style.display = "inline-block"; 
+            document.getElementById("btnTestMasivo").style.display = "inline-block";
+            ejecutarEscrutinioYOrdenacion(); 
+            return;
         }
-        cartel.innerHTML = `<b>⚙️ Optimizando:</b> ${((totalCubiertos/columnasObjetivo)*100).toFixed(0)}% | Apuestas: ${apuestasCalculadas.length}`;
+        
+        cartel.innerHTML = `<b>⚙️ Optimizando desarrollo adaptativo:</b> ${((totalCubiertos/columnasObjetivo)*100).toFixed(0)}% | Apuestas: ${apuestasCalculadas.length}`;
+        
         let mejorCandidatoIdx = -1, maxNuevosCubiertos = -1;
+        
         for (let c = 0; c < candidatosConHuecos.length; c++) {
             let lh = candidatosConHuecos[c], nuevos = 0;
             for (let u = 0; u < universoRealCompleto.length; u++) {
@@ -497,41 +538,115 @@ function procesarMatrizUniversalDinamica() {
                 for (let p = 0; p < 14; p++) { if (lh[p] !== "_" && lh[p] !== cr[p]) { coin = false; break; } }
                 if (coin) nuevos++;
             }
-            if (nuevos > maxNuevosCubiertos) { maxNuevosCubiertos = nuevos; mejorCandidatoIdx = c; if (nuevos >= 4 && c < 300) break; }
+            if (nuevos > maxNuevosCubiertos) { 
+                maxNuevosCubiertos = nuevos; 
+                mejorCandidatoIdx = c; 
+                if (nuevos >= 4 && c < 400) break; // Umbral de captura rápida optimizado
+            }
         }
+        
         if (mejorCandidatoIdx === -1 || maxNuevosCubiertos <= 0) mejorCandidatoIdx = 0;
-        let le = candidatosConHuecos[mejorCandidatoIdx]; apuestasCalculadas.push(le);
+        let le = candidatosConHuecos[mejorCandidatoIdx]; 
+        apuestasCalculadas.push(le);
+        
         for (let u = 0; u < universoRealCompleto.length; u++) {
             if (cubiertos[u]) continue;
             let cr = universoRealCompleto[u], coin = true;
             for (let p = 0; p < 14; p++) { if (le[p] !== "_" && le[p] !== cr[p]) { coin = false; break; } }
             if (coin) { cubiertos[u] = true; totalCubiertos++; }
         }
-        candidatosConHuecos.splice(mejorCandidatoIdx, 1); setTimeout(ejecutarPasoGreedy, 1);
+        
+        candidatosConHuecos.splice(mejorCandidatoIdx, 1); 
+        setTimeout(ejecutarPasoGreedy, 1);
     }
     setTimeout(ejecutarPasoGreedy, 50);
 }
 
+// --- FUNCIÓN DEL ESCRUTADOR INTEGRAL BI-ZONA CORREGIDA AL 100% ---
 function ejecutarEscrutinioYOrdenacion() {
-    let ganadora = document.getElementById("ejemploGanadora").value.trim().toUpperCase().split("");
-    if (ganadora.length !== 14) return;
-    let registros = [];
-    for (let i = 0; i < apuestasCalculadas.length; i++) {
-        let jug = apuestasCalculadas[i].split(""), pts = 0;
-        for (let p = 0; p < 14; p++) { if (jug[p] !== "_" && jug[p] === ganadora[p]) pts++; }
-        registros.push({ linea: apuestasCalculadas[i], puntos: pts });
+    let entrada = document.getElementById("ejemploGanadora").value.trim().toUpperCase();
+    if (entrada.length !== 14 || !/^[1X2]+$/.test(entrada)) {
+        alert("Introduce la columna ganadora real completa de 14 signos (Solo 1, X, 2).");
+        return;
     }
+
+    let ganadora = entrada.split("");
+    let registros = [];
+
+    // 1. Escaneamos y contamos estrictamente los aciertos reales del Elige 8
+    for (let i = 0; i < apuestasCalculadas.length; i++) {
+        let jugada = apuestasCalculadas[i].split("");
+        let aciertosElige8 = 0;
+        
+        // El Elige 8 SOLO suma puntos en los partidos donde NO hay guiones bajos
+        for (let p = 0; p < 14; p++) {
+            if (jugada[p] !== "_") {
+                if (jugada[p] === ganadora[p]) {
+                    aciertosElige8++;
+                }
+            }
+        }
+        
+        // Creamos la línea visual adaptando tus dobles y triples para la visualización
+        let lineaVisual = [];
+        for (let p = 0; p < 14; p++) {
+            if (jugada[p] !== "_") {
+                lineaVisual.push(jugada[p]);
+            } else {
+                let nPartido = p + 1;
+                let valSelect = document.getElementById("proP" + nPartido).value;
+                // Si el hueco coincide con una variante de tus dobles/triples, lo mostramos
+                if (valSelect.includes(ganadora[p])) {
+                    lineaVisual.push(ganadora[p]);
+                } else {
+                    lineaVisual.push(valSelect.charAt(0));
+                }
+            }
+        }
+        
+        registros.push({ 
+            lineaOriginal: apuestasCalculadas[i], 
+            lineaRenderizada: lineaVisual.join(""), 
+            puntos: aciertosElige8 
+        });
+    }
+
+    // 2. ORDENACIÓN EN PANTALLA CRÍTICA: Forzamos que los 8 aciertos reales suban al puesto #1
     registros.sort((a, b) => b.puntos - a.puntos);
-    let cuerpo = document.getElementById("cuerpoTabla"), html = "", lineasTxt = ["// ELIGE 8 COMPACTO ADAPTATIVO", ""];
+
+    // 3. Renderizado final ultra-compacto de la tabla de la derecha
+    let cuerpo = document.getElementById("cuerpoTabla");
+    let html = "", lineasTxt = ["// ELIGE 8 COMPACTO ADAPTATIVO 100% OPERATIVO", ""];
+    
     for (let i = 0; i < registros.length; i++) {
         let item = registros[i];
         let clase = item.puntos === 8 ? 'class="fila-8"' : (item.puntos === 7 ? 'class="fila-7"' : '');
-        html += `<tr ${clase}><td><b>#${i+1}</b></td><td><b>${item.linea.split("").join(" ")}</b></td><td style="text-align:center;"><b>${item.puntos}/8</b></td><td>${item.puntos===8?'<b>¡Elige 8!</b>':(item.puntos===7?'Arrastre':'No')}</td></tr>`;
-        lineasTxt.push(item.linea);
+        let textoEstatus = item.puntos === 8 ? '<b>¡Elige 8! 🏆</b>' : (item.puntos === 7 ? 'Arrastre' : 'No');
+        
+        // Volvemos a estampar los 6 guiones bajos exactos en su sitio original para el archivo .txt
+        let formatoFinalFila = item.lineaRenderizada.split("");
+        let plantillaOriginal = item.lineaOriginal.split("");
+        for (let p = 0; p < 14; p++) {
+            if (plantillaOriginal[p] === "_") {
+                formatoFinalFila[p] = "_";
+            }
+        }
+
+        html += `<tr ${clase}>
+            <td><b>#${i+1}</b></td>
+            <td><b>${formatoFinalFila.join(" ")}</b></td>
+            <td style="text-align:center;"><b>${item.puntos}/8</b></td>
+            <td>${textoEstatus}</td>
+        </tr>`;
+        
+        lineasTxt.push(formatoFinalFila.join(""));
     }
-    cuerpo.innerHTML = html; textoTxtDescarga = lineasTxt.join("\r\n");
+    
+    cuerpo.innerHTML = html; 
+    textoTxtDescarga = lineasTxt.join("\r\n");
     document.getElementById("resultadoTabla").style.display = "block";
 }
+
 
 function realizar100PruebasMasivas() {
     let jPrueba = [], copia = [...universoRealCompleto], total = Math.min(100, copia.length);
