@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Elige 8 Avanzado - Pantalla Única</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #eaedf1; color: #1e293b; margin: 0; padding: 12px; box-sizing: border-box; font-size: 12px; }
+        .main-layout { display: flex; gap: 12px; max-width: 1400px; margin: 0 auto; height: calc(100vh - 24px); }
+        
+        /* COLUMNA IZQUIERDA */
+        .left-column { flex: 1.4; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 3px; overflow-y: auto; height: 100%; box-sizing: border-box; }
+        .left-column h2 { font-size: 13px; margin: 0 0 6px 0; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; display: flex; justify-content: space-between; }
+        
+        /* CABECERA TABLA IZQUIERDA */
+        .cabecera-tabla { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #0b3c5d; color: white; border-radius: 4px; font-weight: bold; font-size: 10px; text-transform: uppercase; text-align: center; letter-spacing: 0.5px; margin-bottom: 2px; }
+        
+        /* FILAS DE PARTIDOS */
+        .fila-partido { display: flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; background: #f8fafc; height: 28px; box-sizing: border-box; }
+        .fila-partido.reducido-manual { background: #fef9c3; border-color: #fde047; }
+        .fila-partido.filtro-manual { background: #f0fdf4; border-color: #bbf7d0; }
+        
+        .num-p { font-weight: bold; width: 14px; color: #64748b; text-align: center; font-size: 11px; }
+        .chk-label { font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 3px; cursor: pointer; width: 70px; text-align: center; }
+        .chk-reducido { transform: scale(1.05); margin: 0; cursor: pointer; }
+        .input-nombre { flex: 2; min-width: 200px; padding: 2px 6px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 500; height: 22px; box-sizing: border-box; }
+        .select-pronostico { padding: 1px 2px; font-size: 11px; font-weight: bold; border-radius: 4px; border: 1px solid #cbd5e1; background: white; width: 48px; text-align: center; height: 22px; box-sizing: border-box; }
+        .cuotas-block { display: flex; gap: 4px; align-items: center; justify-content: center; }
+        .input-cuota { width: 42px; padding: 2px 2px; text-align: center; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; height: 22px; box-sizing: border-box; }
+        .info-calculada { font-size: 10px; font-weight: bold; color: #0284c7; background: white; padding: 2px 4px; border-radius: 3px; border: 1px dashed #cbd5e1; width: 85px; text-align: center; box-sizing: border-box; display: inline-block; white-space: nowrap; text-transform: uppercase; }
+
+        /* COLUMNA DERECHA */
+        .right-column { flex: 1; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
+        .box-derecho { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 3px solid #0284c7; }
+        .box-derecho.z2 { border-top-color: #10b981; }
+        .box-derecho h3 { font-size: 12px; margin: 0 0 8px 0; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; }
+        .flex-filtros { display: flex; gap: 12px; justify-content: space-between; }
+        .item-filtro { display: flex; flex-direction: column; gap: 3px; flex: 1; align-items: center; }
+        .item-filtro label { font-weight: bold; font-size: 11px; color: #475569; }
+        .inputs-rango { display: flex; align-items: center; gap: 4px; }
+        .inputs-rango input { width: 38px; padding: 3px; text-align: center; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
+
+        .panel-global { background: #e2e slate; background: #e2e8f0; padding: 8px; border-radius: 6px; display: flex; justify-content: center; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 2px; }
+        .panel-global input { width: 40px; padding: 4px; text-align: center; font-weight: bold; border-radius: 4px; border: 1px solid #cbd5e1; }
+
+        /* PANEL DE LA NUEVA CASILLA BASE */
+        .panel-columna-base { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px; gap: 8px; font-weight: bold; font-size: 11px; margin-bottom: 4px; }
+        .panel-columna-base input { font-family: monospace; font-size: 13px; text-align: center; font-weight: bold; width: 140px; padding: 4px; letter-spacing: 1.5px; border-radius: 4px; border: 1px solid #cbd5e1; text-transform: uppercase; }
+
+        .btn { border: none; padding: 10px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; color: white; background: #2563eb; transition: background 0.15s; margin-bottom: 4px; text-transform: uppercase; }
+        .btn:hover { background: #1d4ed8; }
+        .btn-verde { background: #16a34a; }
+        .btn-verde:hover { background: #15803d; }
+        .btn-morado { background: #7c3aed; }
+        .btn-morado:hover { background: #6d28d9; }
+        
+        .panel-archivos { display: flex; gap: 6px; }
+        .btn-arch { padding: 6px; font-size: 11px; font-weight: bold; border: none; border-radius: 4px; color: white; flex: 1; cursor: pointer; }
+        .btn-g { background: #0ea5e9; }
+        .btn-a { background: #64748b; }
+
+        .panel-escrutador { background: #fef9c3; border: 1px solid #fef08a; display: none; padding: 8px; border-radius: 6px; }
+        .panel-escrutador label { font-weight: bold; color: #713f12; margin-right: 6px; font-size: 11px; }
+        .panel-escrutador input { padding: 4px; width: 150px; font-size: 13px; font-family: monospace; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; letter-spacing: 1px; }
+        .btn-comp { background: #a16207; color: white; border: none; padding: 5px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+        .alert-info { background: #e0f2fe; color: #0369a1; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; display: none; text-align: left; border: 1px solid #bae6fd; line-height: 1.4; }
+        .tabla-contenedor { flex: 1; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 11px; }
+        th { background-color: #1e293b; color: white; position: sticky; top: 0; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .fila-8 { background-color: #dcfce7 !important; font-weight: bold; color: #166534; }
+        .fila-7 { background-color: #e0f2fe !important; }
+    </style>
+</head>
+<body>
+<div class="main-layout">
+    
+    <!-- COLUMNA IZQUIERDA (PARTIDOS) -->
+    <div class="left-column">
+        <h2><span>⚽ BOLETO COMPACTO</span> <span style="font-size:10px; color:#64748b;">(Exactamente 4 Reducidos)</span></h2>
+        <div class="cabecera-tabla">
+            <div style="width: 14px;">#</div>
+            <div style="width: 70px;">Reducido</div>
+            <div style="flex: 2; text-align: left; padding-left: 4px;">Partido / Equipos</div>
+            <div style="width: 48px;">Jugado</div>
+            <div style="width: 42px; margin-left: 4px;">C1</div>
+            <div style="width: 42px; margin-left: 4px;">CX</div>
+            <div style="width: 42px; margin-left: 4px;">C2</div>
+            <div style="width: 85px; margin-left: 6px;">Cálculo Automático</div>
+        </div>
+        <div id="wrapper-partidos" style="display:flex; flex-direction:column; gap:3px;">
+            <!-- Renderizado dinámicamente -->
+        </div>
+    </div>
+    
+    <!-- COLUMNA DERECHA -->
+    <div class="right-column">
+        
+        <!-- TRAMO A -->
+        <div class="box-derecho">
+            <h3>🔵 TRAMO A: Partidos 1 al 8</h3>
+            <div class="flex-filtros">
+                <div class="item-filtro">
+                    <label>Bases</label>
+                    <div class="inputs-rango"><input type="number" id="minBasesZ1" value="3"><span>a</span><input type="number" id="maxBasesZ1" value="6"></div>
+                </div>
+                <div class="item-filtro">
+                    <label>Difíciles</label>
+                    <div class="inputs-rango"><input type="number" id="minDificilesZ1" value="0"><span>a</span><input type="number" id="maxDificilesZ1" value="3"></div>
+                </div>
+                <div class="item-filtro">
+                    <label style="color:#b91c1c;">UNOS (Filtro)</label>
+                    <div class="inputs-rango"><input type="number" id="minUnosZ1" value="3"><span>a</span><input type="number" id="maxUnosZ1" value="6"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRAMO B -->
+        <div class="box-derecho z2">
+            <h3>🟢 TRAMO B: Partidos 9 al 14</h3>
+            <div class="flex-filtros">
+                <div class="item-filtro">
+                    <label>Bases</label>
+                    <div class="inputs-rango"><input type="number" id="minBasesZ2" value="2"><span>a</span><input type="number" id="maxBasesZ2" value="4"></div>
+                </div>
+                <div class="item-filtro">
+                    <label>Difíciles</label>
+                    <div class="inputs-rango"><input type="number" id="minDificilesZ2" value="0"><span>a</span><input type="number" id="maxDificilesZ2" value="2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCIONES GLOBALES -->
+        <div class="box-derecho" style="border-top-color:#475569; padding:8px; display:flex; flex-direction:column; gap:6px;">
+            <div class="panel-global">
+                <label>Cobertura:</label>
+                <input type="number" id="porcentajeCubrir" value="100">%
+                <div class="panel-archivos" style="margin-left:auto; flex:1;">
+                    <button class="btn-arch btn-g" onclick="guardarCombinacionJSON()">Guardar</button>
+                    <button class="btn-arch btn-a" onclick="abrirCombinacionJSON()">Abrir</button>
+                    <input type="file" id="inputAbrirArchivo" accept=".json" style="display: none;" onchange="procesarArchivoCargado(event)">
+                </div>
+            </div>
+
+            <div class="panel-columna-base">
+                <label style="font-weight:bold; color:#334155; font-size:11px;">Columna Base (14 partidos):</label>
+                <input type="text" id="columnaBase" value="11111111111111" maxlength="14" oninput="this.value = this.value.toUpperCase().replace(/[^1X2]/g, '')" style="font-family:monospace; font-size:12px; width:120px; text-align:center; font-weight:bold; border:1px solid #cbd5e1; border-radius:4px; padding:2px;">
+            </div>
+
+            <button class="btn btn-verde" onclick="procesarMatrizUniversalDinamica()">1. Calcular Elige 8</button>
+            
+            <div id="panelEscrutinioInteractivo" class="panel-escrutador" style="display:none; margin-top:4px;">
+                <label for="ejemploGanadora">Ganadora Real:</label>
+                <input type="text" id="ejemploGanadora" value="12X21221X1X1X1" maxlength="14">
+                <button class="btn-comp" onclick="ejecutarEscrutinioYOrdenacion()">Escrutar</button>
+            </div>
+
+            <!-- CONTENEDOR NUEVO: RESUMEN DE PREMIOS TRADICIONALES DE 14 A 10 -->
+            <div id="resumenPremios14" style="display:none; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:6px; font-size:11px; font-family:monospace; margin-top:2px;">
+                <div style="font-weight:bold; text-align:center; margin-bottom:4px; color:#1e293b; border-bottom:1px dashed #cbd5e1; padding-bottom:2px;">📊 ESCRUTINIO QUINIELA</div>
+                <div style="display:flex; justify-content:space-around; text-align:center;">
+                    <div><b>14</b><br><span id="count14" style="color:#b91c1c; font-size:12px; font-weight:bold;">0</span></div>
+                    <div><b>13</b><br><span id="count13" style="color:#ea580c; font-size:12px; font-weight:bold;">0</span></div>
+                    <div><b>12</b><br><span id="count12" style="color:#eab308; font-size:12px; font-weight:bold;">0</span></div>
+                    <div><b>11</b><br><span id="count11" style="color:#2563eb; font-size:12px; font-weight:bold;">0</span></div>
+                    <div><b>10</b><br><span id="count10" style="color:#16a34a; font-size:12px; font-weight:bold;">0</span></div>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+                <div style="display:flex; gap:6px;">
+                    <button id="btnDescarga" class="btn" style="display:none; margin:0; flex:1;" onclick="descargarTxtUniversal()">2. Descargar .TXT</button>
+                    <button id="btnDescargaCompleto" class="btn btn-verde" style="display:none; margin:0; flex:1;" onclick="descargarTxtCompletoConBase()">3. Descargar COMPLETO</button>
+                </div>
+                <button id="btnTestMasivo" class="btn btn-morado" style="display:none; margin:0;" onclick="realizar100PruebasMasivas()">4. Test 100 Jornadas</button>
+            </div>
+        </div>
+
+        <div id="infoCartel" class="alert-info"></div>
+
+        <div id="resultadoTabla" class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr><th>Apuesta</th><th>Desarrollo Elige 8</th><th style="text-align:center;">Aciertos</th><th>Estatus</th></tr>
+                </thead>
+                <tbody id="cuerpoTabla"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+let apuestasCalculadas = [], textoTxtDescarga = "", universoRealCompleto = [];
+
+const matrizReduccionOficial = [
+    ["1", "1", "1", "1"], ["1", "X", "X", "X"], ["1", "2", "2", "2"],
+    ["X", "1", "X", "2"], ["X", "X", "2", "1"], ["X", "2", "1", "X"],
+    ["2", "1", "2", "X"], ["2", "X", "1", "2"], ["2", "2", "X", "1"]
+];
+
+const wrapper = document.getElementById('wrapper-partidos');
+const nombresDefecto = [
+    "Alavés - Getafe", "Sevilla - Rayo", "Racing - Villarreal", "Español - Levante",
+    "Celta - Osasuna", "Andorra - Ceuta", "Cádiz - Celta B", "Oviedo - Granada",
+    "Mallorca - Valladolid", "Eibar - Tenerife", "Burgos - Córdoba", "Girona - Leganés",
+    "Las Palmas - Albacete", "Sporting - Sabadell"
+];
+
+for(let p=1; p<=14; p++) {
+    let esReducidoDefault = p <= 4;
+    let claseCard = esReducidoDefault ? 'fila-partido reducido-manual' : 'fila-partido filtro-manual';
+    let checkedStr = esReducidoDefault ? 'checked' : '';
+
+    wrapper.innerHTML += `
+        <div class="${claseCard}" id="cardP${p}">
+            <span class="num-p">${p}</span>
+            <label class="chk-label">
+                <input type="checkbox" class="chk-reducido" data-id="${p}" ${checkedStr} onchange="gestionarCambioReduccion(${p})"> Reducido
+            </label>
+            <input type="text" id="nombreP${p}" class="input-nombre" value="${nombresDefecto[p-1]}">
+            <select id="proP${p}" class="select-pronostico">
+                <option value="1">1</option><option value="X">X</option><option value="2">2</option>
+                <option value="1X">1X</option><option value="12">12</option><option value="X2">X2</option>
+                <option value="1X2" selected>1X2</option>
+            </select>
+            <div class="cuotas-block">
+                <input type="number" id="c1_P${p}" class="input-cuota" value="${p<=8?'2.10':'1.85'}" step="0.01" onchange="calcularLogicaCuota(${p})">
+                <input type="number" id="cX_P${p}" class="input-cuota" value="${p<=8?'3.20':'3.30'}" step="0.01" onchange="calcularLogicaCuota(${p})">
+                <input type="number" id="c2_P${p}" class="input-cuota" value="${p<=8?'3.40':'4.20'}" step="0.01" onchange="calcularLogicaCuota(${p})">
+            </div>
+            <div id="infoCuotaP${p}" class="info-calculada">Base: 1 | Dif: 2</div>
+        </div>
+    `;
+}
+
+function gestionarCambioReduccion(id) {
+    let checkboxes = document.querySelectorAll('.chk-reducido');
+    let marcados = Array.from(checkboxes).filter(c => c.checked);
+    if (marcados.length > 4) {
+        alert("Selecciona exactamente 4 partidos para la Reducción.");
+        document.querySelector(`.chk-reducido[data-id="${id}"]`).checked = false;
+        return;
+    }
+    checkboxes.forEach(c => {
+        let pId = c.dataset.id;
+        let card = document.getElementById(`cardP${pId}`);
+        card.className = c.checked ? "fila-partido reducido-manual" : "fila-partido filtro-manual";
+    });
+}
+
+function calcularLogicaCuota(p) {
+    let c1 = parseFloat(document.getElementById(`c1_P${p}`).value) || 999;
+    let cX = parseFloat(document.getElementById(`cX_P${p}`).value) || 999;
+    let c2 = parseFloat(document.getElementById(`c2_P${p}`).value) || 999;
+    let arr = [{ s: "1", v: c1 }, { s: "X", v: cX }, { s: "2", v: c2 }];
+    arr.sort((a, b) => a.v - b.v);
+    document.getElementById(`infoCuotaP${p}`).innerHTML = `Base: <b>${arr[0].s}</b> | Dif: <b>${arr[2].s}</b>`;
+    return { base: arr[0].s, dificil: arr[2].s };
+}
+
+for (let p = 1; p <= 14; p++) { calcularLogicaCuota(p); }
+
+function guardarCombinacionJSON() {
+    let reducidosIds = Array.from(document.querySelectorAll('.chk-reducido')).filter(c => c.checked).map(c => parseInt(c.dataset.id));
+    let configuracion = {
+        reducidos: reducidosIds,
+        columnaBase: document.getElementById("columnaBase").value,
+        filtrosGlobales: {
+            minBasesZ1: parseInt(document.getElementById("minBasesZ1").value),
+            maxBasesZ1: parseInt(document.getElementById("maxBasesZ1").value),
+            minDificilesZ1: parseInt(document.getElementById("minDificilesZ1").value),
+            maxDificilesZ1: parseInt(document.getElementById("maxDificilesZ1").value),
+            minUnosZ1: parseInt(document.getElementById("minUnosZ1").value),
+            maxUnosZ1: parseInt(document.getElementById("maxUnosZ1").value),
+            minBasesZ2: parseInt(document.getElementById("minBasesZ2").value),
+            maxBasesZ2: parseInt(document.getElementById("maxBasesZ2").value),
+            minDificilesZ2: parseInt(document.getElementById("minDificilesZ2").value),
+            maxDificilesZ2: parseInt(document.getElementById("maxDificilesZ2").value)
+        },
+        global: { porcentajeCubrir: parseInt(document.getElementById("porcentajeCubrir").value) },
+        partidos: []
+    };
+    for (let p = 1; p <= 14; p++) {
+        configuracion.partidos.push({
+            id: p, nombre: document.getElementById("nombreP" + p).value, pronostico: document.getElementById("proP" + p).value,
+            c1: document.getElementById("c1_P" + p).value, cX: document.getElementById("cX_P" + p).value, c2: document.getElementById("c2_P" + p).value
+        });
+    }
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 2));
+    let dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "config_elige8_completa.json"); dl.click();
+}
+
+function abrirCombinacionJSON() { document.getElementById("inputAbrirArchivo").click(); }
+
+function procesarArchivoCargado(event) {
+    let input = event.target;
+    if (!input || !input.files || input.files.length === 0) return;
+    let archivoSeleccionado = input.files[0];
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let config = JSON.parse(e.target.result);
+            if (config.reducidos) {
+                document.querySelectorAll('.chk-reducido').forEach(c => { c.checked = config.reducidos.includes(parseInt(c.dataset.id)); });
+                gestionarCambioReduccion(1);
+            }
+            if (config.filtrosGlobales) {
+                let fg = config.filtrosGlobales;
+                if (fg.minBasesZ1 !== undefined) document.getElementById("minBasesZ1").value = fg.minBasesZ1;
+                if (fg.maxBasesZ1 !== undefined) document.getElementById("maxBasesZ1").value = fg.maxBasesZ1;
+                
+                // DOBLE COMPROBACIÓN: Lee tanto el formato largo como el abreviado para evitar el error
+                let valMinDifZ1 = fg.minDificilesZ1 !== undefined ? fg.minDificilesZ1 : fg.minDifZ1;
+                let valMaxDifZ1 = fg.maxDificilesZ1 !== undefined ? fg.maxDificilesZ1 : fg.maxDifZ1;
+                if (valMinDifZ1 !== undefined) document.getElementById("minDificilesZ1").value = valMinDifZ1;
+                if (valMaxDifZ1 !== undefined) document.getElementById("maxDificilesZ1").value = valMaxDifZ1;
+                
+                if (fg.minUnosZ1 !== undefined) document.getElementById("minUnosZ1").value = fg.minUnosZ1;
+                if (fg.maxUnosZ1 !== undefined) document.getElementById("maxUnosZ1").value = fg.maxUnosZ1;
+                if (fg.minBasesZ2 !== undefined) document.getElementById("minBasesZ2").value = fg.minBasesZ2;
+                if (fg.maxBasesZ2 !== undefined) document.getElementById("maxBasesZ2").value = fg.maxBasesZ2;
+                
+                let valMinDifZ2 = fg.minDificilesZ2 !== undefined ? fg.minDificilesZ2 : fg.minDifZ2;
+                let valMaxDifZ2 = fg.maxDificilesZ2 !== undefined ? fg.maxDificilesZ2 : fg.maxDifZ2;
+                if (valMinDifZ2 !== undefined) document.getElementById("minDificilesZ2").value = valMinDifZ2;
+                if (valMaxDifZ2 !== undefined) document.getElementById("maxDificilesZ2").value = valMaxDifZ2;
+            }
+            if (config.global && config.global.porcentajeCubrir !== undefined) { 
+                document.getElementById("porcentajeCubrir").value = config.global.porcentajeCubrir; 
+            }
+            if (config.columnaBase !== undefined) {
+                document.getElementById("columnaBase").value = config.columnaBase;
+            }
+            if (config.partidos) {
+                config.partidos.forEach(p => {
+                    if (document.getElementById("nombreP" + p.id)) document.getElementById("nombreP" + p.id).value = p.nombre;
+                    if (document.getElementById("proP" + p.id)) document.getElementById("proP" + p.id).value = p.pronostico;
+                    if (document.getElementById("c1_P" + p.id)) document.getElementById("c1_P" + p.id).value = p.c1;
+                    if (document.getElementById("cX_P" + p.id)) document.getElementById("cX_P" + p.id).value = p.cX;
+                    if (document.getElementById("c2_P" + p.id)) document.getElementById("c2_P" + p.id).value = p.c2;
+                    calcularLogicaCuota(p.id);
+                });
+            }
+            procesarMatrizUniversalDinamica();
+        } catch (error) { alert("Error al procesar el archivo de configuración."); }
+    };
+    reader.readAsText(archivoSeleccionado);
+    input.value = '';
+}
+
+function procesarMatrizUniversalDinamica() {
+    let checkboxes = document.querySelectorAll('.chk-reducido');
+    let partidosReducidos = Array.from(checkboxes).filter(c => c.checked).map(c => parseInt(c.dataset.id));
+    if (partidosReducidos.length !== 4) { alert("Selecciona exactamente 4 partidos reducidos."); return; }
+
+    let minBasesZ1 = parseInt(document.getElementById("minBasesZ1").value), maxBasesZ1 = parseInt(document.getElementById("maxBasesZ1").value);
+    let minDifZ1 = parseInt(document.getElementById("minDificilesZ1").value), maxDifZ1 = parseInt(document.getElementById("maxDificilesZ1").value);
+    let minUnosZ1 = parseInt(document.getElementById("minUnosZ1").value), maxUnosZ1 = parseInt(document.getElementById("maxUnosZ1").value);
+    let minBasesZ2 = parseInt(document.getElementById("minBasesZ2").value), maxBasesZ2 = parseInt(document.getElementById("maxBasesZ2").value);
+    let minDifZ2 = parseInt(document.getElementById("minDificilesZ2").value), maxDifZ2 = parseInt(document.getElementById("maxDificilesZ2").value);
+    let pctObjetivo = parseInt(document.getElementById("porcentajeCubrir").value);
+
+    let cartel = document.getElementById("infoCartel"); cartel.style.display = "block";
+    cartel.innerHTML = "<b>⏳ Generando universo adaptativo completo...</b>";
+
+    let mapaCuotas = {}, opcionesPronostico = {};
+    for (let p = 1; p <= 14; p++) {
+        let c1 = parseFloat(document.getElementById(`c1_P${p}`).value) || 999;
+        let cX = parseFloat(document.getElementById(`cX_P${p}`).value) || 999;
+        let c2 = parseFloat(document.getElementById(`c2_P${p}`).value) || 999;
+        let sorted = [{ s: "1", v: c1 }, { s: "X", v: cX }, { s: "2", v: c2 }].sort((a, b) => a.v - b.v);
+        mapaCuotas[p] = { base: sorted[0].s, dificil: sorted[2].s };
+        opcionesPronostico[p] = document.getElementById("proP" + p).value === "1X2" ? ["1", "X", "2"] : document.getElementById("proP" + p).value.split("");
+    }
+
+    let filtrosTramoA = [], filtrosTramoB = [];
+    for (let p = 1; p <= 14; p++) { if (!partidosReducidos.includes(p)) { if (p <= 8) filtrosTramoA.push(p); else filtrosTramoB.push(p); } }
+
+    universoRealCompleto = [];
+    for (let r = 0; r < matrizReduccionOficial.length; r++) {
+        let bloqueReducido9 = matrizReduccionOficial[r];
+        function desglosarBoletoCompleto(partidoIdx, combActual) {
+            if (partidoIdx === 15) { universoRealCompleto.push(combActual.join("")); return; }
+            if (partidosReducidos.includes(partidoIdx)) {
+                let signoRed = bloqueReducido9[partidosReducidos.indexOf(partidoIdx)];
+                if (opcionesPronostico[partidoIdx].includes(signoRed)) { combActual.push(signoRed); desglosarBoletoCompleto(partidoIdx + 1, combActual); combActual.pop(); }
+            } else {
+                let sPermitidos = opcionesPronostico[partidoIdx];
+                for (let i = 0; i < sPermitidos.length; i++) { combActual.push(sPermitidos[i]); desglosarBoletoCompleto(partidoIdx + 1, combActual); combActual.pop(); }
+            }
+        }
+        desglosarBoletoCompleto(1, []);
+    }
+
+    let todosPartidosFiltro = filtrosTramoA.concat(filtrosTramoB);
+    let candidatosConHuecos = [];
+    for (let i = 0; i < universoRealCompleto.length; i++) {
+        let colOriginal = universoRealCompleto[i].split("");
+        let posHuecoRed = partidosReducidos[i % partidosReducidos.length] - 1;
+        colOriginal[posHuecoRed] = "_";
+        for (let h = 0; h < 5; h++) {
+            let posHuecoFiltro = todosPartidosFiltro[(i + h) % todosPartidosFiltro.length] - 1;
+            colOriginal[posHuecoFiltro] = "_";
+        }
+        candidatosConHuecos.push(colOriginal.join(""));
+    }
+    candidatosConHuecos = Array.from(new Set(candidatosConHuecos));
+
+    candidatosConHuecos.sort((a, b) => {
+        function evaluarAfinidad(col) {
+            let bZ1 = 0, dZ1 = 0, uZ1 = 0;
+            filtrosTramoA.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ1++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ1++; if(col[pf-1]==="1") uZ1++; } });
+            let bZ2 = 0, dZ2 = 0;
+            filtrosTramoB.forEach(pf => { if (col[pf-1]!=="_") { if(col[pf-1]===mapaCuotas[pf].base) bZ2++; if(col[pf-1]===mapaCuotas[pf].dificil) dZ2++; } });
+            let pts = 0;
+            if(bZ1>=minBasesZ1 && bZ1<=maxBasesZ1) pts+=10; if(dZ1>=minDifZ1 && dZ1<=maxDifZ1) pts+=10; if(uZ1>=minUnosZ1 && uZ1<=maxUnosZ1) pts+=35;
+            if(bZ2>=minBasesZ2 && bZ2<=maxBasesZ2) pts+=10; if(dZ2>=minDifZ2 && dZ2<=maxDifZ2) pts+=10;
+            return pts;
+        }
+        return evaluarAfinidad(b) - evaluarAfinidad(a);
+    });
+
+    let cubiertos = new Array(universoRealCompleto.length).fill(false); apuestasCalculadas = [];
+    let totalCubiertos = 0, columnasObjetivo = Math.ceil((universoRealCompleto.length * pctObjetivo) / 100);
+
+    document.getElementById("btnDescarga").style.display = "none"; document.getElementById("btnDescargaCompleto").style.display = "none"; document.getElementById("btnTestMasivo").style.display = "none";
+
+    function ejecutarPasoGreedy() {
+        if (totalCubiertos >= columnasObjetivo || totalCubiertos >= universoRealCompleto.length || candidatosConHuecos.length === 0) {
+            cartel.innerHTML = `<b>✅ ¡Completado con Éxito!</b> Universo: <b>${universoRealCompleto.length}</b> | Apuestas: <span style="color:#16a34a; font-size:14px;"><b>${apuestasCalculadas.length}</b></span>`;
+            document.getElementById("panelEscrutinioInteractivo").style.display = "block";
+            document.getElementById("btnDescarga").style.display = "inline-block"; document.getElementById("btnDescargaCompleto").style.display = "inline-block"; document.getElementById("btnTestMasivo").style.display = "inline-block";
+            ejecutarEscrutinioYOrdenacion(); return;
+        }
+        cartel.innerHTML = `<b>⚙️ Optimizando desarrollo:</b> ${((totalCubiertos/columnasObjetivo)*100).toFixed(0)}% | Apuestas: ${apuestasCalculadas.length}`;
+        let mejorCandidatoIdx = -1, maxNuevosCubiertos = -1;
+        for (let c = 0; c < candidatosConHuecos.length; c++) {
+            let lh = candidatosConHuecos[c], nuevos = 0;
+            for (let u = 0; u < universoRealCompleto.length; u++) {
+                if (cubiertos[u]) continue;
+                let cr = universoRealCompleto[u], coin = true;
+                for (let p = 0; p < 14; p++) { if (lh[p] !== "_" && lh[p] !== cr[p]) { coin = false; break; } }
+                if (coin) nuevos++;
+            }
+            if (nuevos > maxNuevosCubiertos) { maxNuevosCubiertos = nuevos; mejorCandidatoIdx = c; if (nuevos >= 4 && c < 400) break; }
+        }
+        if (mejorCandidatoIdx === -1 || maxNuevosCubiertos <= 0) mejorCandidatoIdx = 0;
+        let le = candidatosConHuecos[mejorCandidatoIdx]; apuestasCalculadas.push(le);
+        for (let u = 0; u < universoRealCompleto.length; u++) {
+            if (cubiertos[u]) continue;
+            let cr = universoRealCompleto[u], coin = true;
+            for (let p = 0; p < 14; p++) { if (le[p] !== "_" && le[p] !== cr[p]) { coin = false; break; } }
+            if (coin) { cubiertos[u] = true; totalCubiertos++; }
+        }
+        candidatosConHuecos.splice(mejorCandidatoIdx, 1); setTimeout(ejecutarPasoGreedy, 1);
+    }
+    setTimeout(ejecutarPasoGreedy, 50);
+}
+
+
+function ejecutarEscrutinioYOrdenacion() {
+    let entrada = document.getElementById("ejemploGanadora").value.trim().toUpperCase();
+    if (entrada.length !== 14 || !/^[1X2]+$/.test(entrada)) { alert("Introduce la columna ganadora completa de 14 signos."); return; }
+    let ganadora = entrada.split(""); 
+    
+    // Obtenemos la columna base para hacer la simulación de 14 partidos reales
+    const columnaBase = document.getElementById("columnaBase").value.trim().toUpperCase();
+
+    let registros = [];
+    // Variables contadoras para la Quiniela General de 14
+    let p14 = 0, p13 = 0, p12 = 0, p11 = 0, p10 = 0;
+
+    for (let i = 0; i < apuestasCalculadas.length; i++) {
+        let jugada = apuestasCalculadas[i].split(""); 
+        let aciertosElige8 = 0;
+        let aciertosQuiniela14 = 0;
+
+        // Bucle de escrutinio dual simultáneo
+        for (let p = 0; p < 14; p++) {
+            // 1. Escrutinio para el Elige 8 (Solo cuenta si no hay hueco)
+            if (jugada[p] !== "_") {
+                if (jugada[p] === ganadora[p]) aciertosElige8++;
+            }
+            
+            // 2. Escrutinio para los 14 Partidos (Fusionando los huecos con la Base)
+            let signoRealApuesta = jugada[p] === "_" ? columnaBase[p] : jugada[p];
+            if (signoRealApuesta === ganadora[p]) aciertosQuiniela14++;
+        }
+        
+        // Clasificación en los contadores generales de la Quiniela de 14 partidos
+        if (aciertosQuiniela14 === 14) p14++;
+        else if (aciertosQuiniela14 === 13) p13++;
+        else if (aciertosQuiniela14 === 12) p12++;
+        else if (aciertosQuiniela14 === 11) p11++;
+        else if (aciertosQuiniela14 === 10) p10++;
+        
+        let lineaVisual = [];
+        for (let p = 0; p < 14; p++) {
+            if (jugada[p] !== "_") { lineaVisual.push(jugada[p]); } 
+            else {
+                let nPartido = p + 1; let valSelect = document.getElementById("proP" + nPartido).value;
+                if (valSelect.includes(ganadora[p])) { lineaVisual.push(ganadora[p]); } else { lineaVisual.push(valSelect.charAt(0)); }
+            }
+        }
+        registros.push({ lineaOriginal: apuestasCalculadas[i], lineaRenderizada: lineaVisual.join(""), puntos: aciertosElige8 });
+    }
+
+    // Actualizamos visualmente las casillas del contador de 14 partidos
+    document.getElementById("count14").innerText = p14;
+    document.getElementById("count13").innerText = p13;
+    document.getElementById("count12").innerText = p12;
+    document.getElementById("count11").innerText = p11;
+    document.getElementById("count10").innerText = p10;
+    document.getElementById("resumenPremios14").style.display = "block";
+
+    registros.sort((a, b) => b.puntos - a.puntos);
+    let cuerpo = document.getElementById("cuerpoTabla"); 
+    let html = "", lineasTxt = [];
+    
+    for (let i = 0; i < registros.length; i++) {
+        let item = registros[i];
+        let clase = item.puntos === 8 ? 'class="fila-8"' : (item.puntos === 7 ? 'class="fila-7"' : '');
+        let textoEstatus = item.puntos === 8 ? '<b>¡Elige 8! 🏆</b>' : (item.puntos === 7 ? 'Arrastre' : 'No');
+        let formatoFinalFila = item.lineaRenderizada.split(""); 
+        let plantillaOriginal = item.lineaOriginal.split("");
+        
+        for (let p = 0; p < 14; p++) { if (plantillaOriginal[p] === "_") formatoFinalFila[p] = "_"; }
+
+        html += `<tr ${clase}><td><b>#${i+1}</b></td><td><b>${formatoFinalFila.join(" ")}</b></td><td style="text-align:center;"><b>${item.puntos}/8</b></td><td>${textoEstatus}</td></tr>`;
+        lineasTxt.push(formatoFinalFila.join(""));
+    }
+    
+    cuerpo.innerHTML = html; 
+    textoTxtDescarga = lineasTxt.join("\r\n");
+    document.getElementById("resultadoTabla").style.display = "block";
+    
+    document.getElementById("btnDescarga").style.display = "inline-block";
+    document.getElementById("btnDescargaCompleto").style.display = "inline-block";
+    document.getElementById("btnTestMasivo").style.display = "inline-block";
+}
+
+function realizar100PruebasMasivas() {
+    let jPrueba = [], copia = [...universoRealCompleto], total = Math.min(100, copia.length);
+    for (let i = 0; i < total; i++) { let idx = Math.floor(Math.random()*copia.length); jPrueba.push(copia[idx]); copia.splice(idx,1); }
+    let e8 = 0, e7 = 0;
+    for (let j = 0; j < jPrueba.length; j++) {
+        let gan = jPrueba[j].split(""), maxP = 0;
+        for (let a = 0; a < apuestasCalculadas.length; a++) {
+            let jug = apuestasCalculadas[a].split(""), pts = 0;
+            for (let p = 0; p < 14; p++) { if (jug[p] !== "_" && jug[p] === gan[p]) pts++; }
+            if (pts > maxP) maxP = pts;
+        }
+        if (maxP === 8) e8++; else if (maxP === 7) e7++;
+    }
+    let cab = ["// JORNADAS AUDITORÍA COMPACTA", ""], lineas = cab.concat(jPrueba);
+    let blob = new Blob([lineas.join("\r\n")], { type: "text/plain;charset=utf-8" });
+    let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "100_jornadas_compactas.txt"; a.click();
+    document.getElementById("infoCartel").innerHTML = `<b>📊 TEST:</b> Eficacia: <span style="color:#16a34a;"><b>${((e8/total)*100).toFixed(1)}%</b></span> con 8. Arrastres de 7: ${e7}.`;
+}
+
+function descargarTxtUniversal() {
+    let blob = new Blob([textoTxtDescarga], { type: "text/plain;charset=utf-8" });
+    let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "apuestas_elige8_huecos.txt"; link.click();
+}
+
+function descargarTxtCompletoConBase() {
+    const columnaBase = document.getElementById("columnaBase").value.trim().toUpperCase();
+    if (columnaBase.length !== 14 || !/^[1X2]+$/.test(columnaBase)) { alert("La Columna Base debe tener exactamente 14 signos (1, X, 2)."); return; }
+
+    let lineasOriginales = textoTxtDescarga.split("\r\n");
+    let lineasCompletasResultantes = ["// QUINIELA 14 COMPLETA - RELLENADA CON TU BASE", "//"];
+
+    lineasOriginales.forEach(linea => {
+        let textoLimpio = linea.trim();
+        if (textoLimpio === "" || textoLimpio.startsWith("//")) return;
+
+        let apuestaFusionada = "";
+        for (let p = 0; p < 14; p++) {
+            if (textoLimpio[p] === "_") { apuestaFusionada += columnaBase[p]; } 
+            else { apuestaFusionada += textoLimpio[p]; }
+        }
+        lineasCompletasResultantes.push(apuestaFusionada);
+    });
+
+    let blob = new Blob([lineasCompletasResultantes.join("\r\n")], { type: "text/plain;charset=utf-8" });
+    let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "quiniela_completa_base.txt"; link.click();
+}
+</script>
+</body>
+</html>
