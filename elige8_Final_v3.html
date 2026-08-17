@@ -442,16 +442,39 @@ function ejecutarEscrutinioYOrdenacion() {
         registros.push({ lineaOriginal: apuestasCalculadas[i], lineaRenderizada: lineaVisual.join(""), puntos: aciertosElige8 });
     }
 
-    document.getElementById("esc14").innerHTML = `14: <span class="val-destacado">${p14}</span>`;
+    // =====================================================================
+    // MOTOR DE ENCHUFADO DE COLORES Y TAMAÑO GIGANTE (SOLICITADO)
+    // =====================================================================
+    // Estilo dinámico para el Pleno de 14 de la Quiniela
+    let estilo14 = p14 > 0 
+        ? `style="color: #ff3e3e; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(255,62,62,0.6); animation: blink 1s infinite;"` 
+        : `style="color: #fb923c; font-weight: bold;"`;
+        
+    // Estilo dinámico para el Pleno de 8 del Elige 8
+    let estiloE8 = e8 > 0 
+        ? `style="color: #4ade80; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(74,222,128,0.6); animation: blink 1s infinite;"` 
+        : `style="color: #fb923c; font-weight: bold;"`;
+
+    // Inyectamos las etiquetas con sus nuevos tamaños y colores en tu Grid
+    document.getElementById("esc14").innerHTML = `14: <span ${estilo14}>${p14}</span>`;
     document.getElementById("esc13").innerHTML = `13: <span class="val-destacado">${p13}</span>`;
     document.getElementById("esc12").innerHTML = `12: <span class="val-destacado">${p12}</span>`;
     document.getElementById("esc11").innerHTML = `11: <span class="val-destacado">${p11}</span>`;
     document.getElementById("esc10").innerHTML = `10: <span class="val-destacado">${p10}</span>`;
-    document.getElementById("escE8").innerHTML = `8: <span class="val-destacado">${e8}</span>`;
+    
+    document.getElementById("escE8").innerHTML = `8: <span ${estiloE8}>${e8}</span>`;
     document.getElementById("escE7").innerHTML = `7: <span class="val-destacado">${e7}</span>`;
     document.getElementById("escE6").innerHTML = `6: <span class="val-destacado">${e6}</span>`;
     document.getElementById("escE5").innerHTML = `5: <span class="val-destacado">${e5}</span>`;
     document.getElementById("escE4").innerHTML = `4: <span class="val-destacado">${e4}</span>`;
+
+    // Añadimos el código CSS de parpadeo directamente en la memoria para que el navegador lo ejecute
+    if(!document.getElementById("estiloAnimacionBlink")){
+        let styleSheet = document.createElement("style");
+        styleSheet.id = "estiloAnimacionBlink";
+        styleSheet.innerText = "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }";
+        document.head.appendChild(styleSheet);
+    }
 
     let totalRecaudadoEuros = (p14 * 15000) + (p13 * 250) + (p12 * 15) + (p11 * 3) + (p10 * 1.5) + (e8 * 85);
     document.getElementById("totalGanadoEstimado").innerText = `${totalRecaudadoEuros.toFixed(2)}€`;
@@ -510,5 +533,3 @@ window.onload = inicializarTodosLosPaneles;
 </script>
 </body>
 </html>
-
-</script>
