@@ -57,15 +57,70 @@
         th { background-color: #141b25; color: #38bdf8; position: sticky; top: 0; }
         .fila-8 { background-color: #14532d !important; color: #4ade80 !important; font-weight: bold; }
         .fila-7 { background-color: #1e3a8a !important; color: #38bdf8 !important; }
+    
+/* ESTILOS PARA EL PANEL DE CREACIÓN DE BOLETO */
+.formulario-boleto { 
+    display: none; 
+    background: #1c2635; 
+    border: 1px solid #f97316; 
+    border-radius: 6px; 
+    padding: 12px; 
+    margin-bottom: 10px; 
+}
+.grid-creador { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 6px; 
+    max-height: 300px; 
+    overflow-y: auto; 
+    padding-right: 4px;
+}
+.fila-creador { 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+    background: #243042; 
+    padding: 4px; 
+    border-radius: 4px; 
+    border: 1px solid #2d3d52;
+}
+.fila-creador input[type="text"] { 
+    background: #141b25; 
+    color: white; 
+    border: 1px solid #3b4f6c; 
+    border-radius: 3px; 
+    font-size: 10px; 
+    padding: 2px;
+}
+.btn-creador-aplicar { 
+    background: #f97316; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px; 
+    font-weight: bold; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    margin-top: 8px; 
+    width: 100%;
+}
+.btn-creador-aplicar:hover { background: #ea580c; }
+
+
     </style>
 </head>
 <body>
 <div class="dashboard-layout">
 
     <!-- 1. BARRA DE CONTROL SUPERIOR -->
+        <!-- 1. BARRA DE CONTROL SUPERIOR -->
     <div class="top-navbar">
         <div class="nav-item"><label>Jornada:</label><select id="selectJornada"><option>1</option><option>2</option></select></div>
         <div class="nav-item"><label>Cubrir:</label><input type="range" id="porcentajeCubrir" min="10" max="100" value="100" oninput="document.getElementById('valPorcentaje').innerText = this.value + '%'"> <span id="valPorcentaje" style="color: #38bdf8; font-weight: bold; min-width: 35px;">100%</span></div>
+        
+        <!-- BOTÓN NUEVO SOLICITADO PARA CREAR/MODIFICAR EL BOLETO -->
+        <button class="btn-nav" style="background: #4b5563;" onclick="conmutarVisibilidadCreador()">🛠️ Configurar Boleto</button>
+        
         <div class="nav-item" style="margin-left:auto;"><button class="btn-nav btn-blue" onclick="procesarMatrizUniversalDinamica()">1. Calcular Elige 8</button></div>
         <button id="btnDescarga" class="btn-nav btn-green" style="display:none;" onclick="descargarTxtUniversal()">2. Descargar .TXT</button>
         <button id="btnDescargaCompleto" class="btn-nav btn-blue" style="display:none;" onclick="descargarTxtCompletoConBase()">3. Descargar COMPLETO</button>
@@ -75,7 +130,18 @@
         <input type="file" id="inputAbrirArchivo" accept=".json" style="display: none;" onchange="procesarArchivoCargado(event)">
     </div>
 
+    <!-- PANEL FORMULARIO EMERGENTE NUEVO PARA INTRODUCIR DATOS -->
+    <div id="panelFormularioCreador" class="formulario-boleto">
+        <div style="font-weight: bold; color: #f97316; margin-bottom: 6px; font-size: 11px;">📝 EDITOR DE DATOS DE LA QUINIELA (Introduce Equipos, Pronósticos y Cuotas)</div>
+        <div class="grid-creador" id="camposInyeccionCreador">
+            <!-- JavaScript meterá aquí los 14 formularios automáticamente -->
+        </div>
+        <button class="btn-creador-aplicar" onclick="aplicarNuevosDatosBoleto()">💾 Aplicar y actualizar cambios en el boleto</button>
+    </div>
+
+
     <!-- 2. GRID DE PANELES SUPERIORES -->
+        <!-- 2. GRID DE PANELES SUPERIORES (4 COLUMNAS PERFECTAS) -->
     <div class="grid-paneles">
         <div class="tarjeta-panel t-blue">
             <h3>Filtros 1ª Div (P1-P8)</h3>
@@ -93,25 +159,51 @@
         <div class="tarjeta-panel t-orange">
             <h3>Escrutinio Unificado</h3>
             <div class="escrutinio-tabla">
-                <div><b>Quiniela</b><div id="esc14">14: <span class="val-destacado">0</span></div><div id="esc13">13: <span class="val-destacado">0</span></div><div id="esc12">12: <span class="val-destacado">0</span></div><div id="esc11">11: <span class="val-destacado">0</span></div><div id="esc10">10: <span class="val-destacado">0</span></div></div>
-                <div><b>Elige 8</b><div id="escE8">8: <span class="val-destacado">0</span></div><div id="escE7">7: <span class="val-destacado">0</span></div><div id="escE6">6: <span class="val-destacado">0</span></div><div id="escE5">5: <span class="val-destacado">0</span></div><div id="escE4">4: <span class="val-destacado">0</span></div></div>
+                <div>
+                    <b>Quiniela</b>
+                    <div id="esc14">14: <span class="val-destacado">0</span></div>
+                    <div id="esc13">13: <span class="val-destacado">0</span></div>
+                    <div id="esc12">12: <span class="val-destacado">0</span></div>
+                    <div id="esc11">11: <span class="val-destacado">0</span></div>
+                    <div id="esc10">10: <span class="val-destacado">0</span></div>
+                </div>
+                <div>
+                    <b>Elige 8</b>
+                    <div id="escE8">8: <span class="val-destacado">0</span></div>
+                    <div id="escE7">7: <span class="val-destacado">0</span></div>
+                    <!-- CONTENEDORES DE SEGURIDAD RECUPERADOS PARA EVITAR EL ERROR NULL -->
+                    <div id="escE6" style="display:none;">6: <span>0</span></div>
+                    <div id="escE5" style="display:none;">5: <span>0</span></div>
+                    <div id="escE4" style="display:none;">4: <span>0</span></div>
+                </div>
             </div>
         </div>
 
-        <div class="tarjeta-panel t-orange" style="justify-content: center; align-items: center; text-align: center; gap:3px;">
+        <div class="tarjeta-panel t-orange" style="justify-content: flex-start; align-items: stretch; text-align: left; gap:4px;">
             <h3>Escrutinio Total</h3>
-            <div style="font-size: 10px; color:#94a3b8; text-transform: uppercase;">Estimado Recaudado</div>
-            <div id="totalGanadoEstimado" style="font-size: 16px; font-weight: bold; color: #4ade80; margin: 1px 0;">0.00€</div>
-            <div class="panel-columna-base" style="width: 100%; box-sizing: border-box;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color:#94a3b8; text-transform: uppercase; margin-top: 2px;">
+                <span>Estimado Recaudado:</span>
+                <span id="totalGanadoEstimado" style="font-weight: bold; color: #4ade80;">0.00€</span>
+            </div>
+            
+            <div style="background: #141b25; border: 1px solid #2d3d52; border-radius: 4px; padding: 4px; font-family: monospace; font-size: 10px; display: flex; flex-direction: column; gap: 2px; margin: 2px 0;">
+                <div style="display: flex; justify-content: space-between;"><span>Apuestas Totales:</span><span id="globalApuestas" style="color: #38bdf8; font-weight: bold;">0</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>Desarrollo Total:</span><span id="globalCondicion" style="color: #7c3aed; font-weight: bold;">0T 0D</span></div>
+               <!-- <div style="display: flex; justify-content: space-between; border-top: 1px dashed #2d3d52; margin-top: 2px; padding-top: 2px;"><span>Bases Acertadas:</span><span id="globalBases" style="color: #4ade80; font-weight: bold;">0</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>Difíciles Acertadas:</span><span id="globalDificiles" style="color: #fb923c; font-weight: bold;">0</span></div>-->
+            </div>
+
+            <div class="panel-columna-base" style="width: 100%; box-sizing: border-box; height: 24px;">
                 <label>BASE (14P):</label>
                 <input type="text" id="columnaBase" value="11111111111111" maxlength="14">
             </div>
-            <div id="panelEscrutinioInteractivo" class="panel-escrutador" style="width:100%; box-sizing:border-box; display:flex; gap:4px; justify-content:center;">
+            <div id="panelEscrutinioInteractivo" class="panel-escrutador" style="width:100%; box-sizing:border-box; display:flex; gap:4px; justify-content:center; height: 24px; padding: 0; background: transparent; border: none;">
                 <input type="text" id="ejemploGanadora" value="12X21221X1X1X1" maxlength="14" style="width:90px; font-size:10px; background:#141b25; color:white; border:1px solid #3b4f6c; border-radius:4px; text-align:center;">
-                <button class="btn-comp" onclick="ejecutarEscrutinioYOrdenacion()" style="height:18px; font-size:10px; background:#a16207; color:white; border:none; border-radius:4px; cursor:pointer;">Escrutar</button>
+                <button class="btn-comp" onclick="ejecutarEscrutinioYOrdenacion()" style="height:20px; font-size:10px; background:#a16207; color:white; border:none; border-radius:4px; cursor:pointer;">Escrutar</button>
             </div>
         </div>
     </div>
+
 
     <!-- 3. LA TARJETA DEL BOLETO: AHORA MUESTRA LOS 14 PARTIDOS COMPLETOS -->
     <div class="tarjeta-boleto">
@@ -169,10 +261,10 @@ const matrizReduccionOficial = [
 ];
 
 const nombresDefecto = [
-    "Alavés - Getafe", "Sevilla - Rayo", "Racing - Villarreal", "Español - Levante",
-    "Celta - Osasuna", "Andorra - Ceuta", "Cádiz - Celta B", "Oviedo - Granada",
-    "Mallorca - Valladolid", "Eibar - Tenerife", "Burgos - Córdoba", "Girona - Leganés",
-    "Las Palmas - Albacete", "Sporting - Sabadell"
+    "Athletco - Sevilla", "Valencia - Celta", "Español - Real Madrid", "Getafe - Racing",
+    "Elche - Barcelona", "Osasuna - Levante", "Málaga - Deportivo", "Oviedo - Leganés",
+    "Ceuta - Las Palmas", "Eldense - Cádiz", "Eibar - Valladolid", "Castellón - Sabadell",
+    "Sporting - Burgos", "Tenerife - Almería"
 ];
 
 let estadoPartidos = Array.from({ length: 14 }, (_, i) => ({
@@ -215,7 +307,7 @@ function inicializarTodosLosPaneles() {
     renderizarBoletoCompleto();
 }
 
-// CORREGIDO AL 100%: Añadidos los corchetes [0] y [2] para extraer Base y Difícil sin nulos
+// CORREGIDO: Columna Equipos transformada en un input interactivo enlazado a la memoria
 function renderizarBoletoCompleto() {
     const contenedor = document.getElementById("contenedor-filas-completas");
     if (!contenedor) return;
@@ -223,12 +315,9 @@ function renderizarBoletoCompleto() {
     
     for (let i = 0; i < 14; i++) {
         let p = estadoPartidos[i];
-        
-        // Ordenamos las cuotas de menor a mayor
         let arrCuotas = [{ s: "1", v: p.c1 }, { s: "X", v: p.cX }, { s: "2", v: p.c2 }];
         arrCuotas.sort((a, b) => a.v - b.v);
         
-        // CRÍTICO: Capturamos la cuota más baja [0] y la más alta [2] indexada
         let baseSigno = arrCuotas[0].s;
         let difSigno = arrCuotas[2].s;
         
@@ -239,7 +328,12 @@ function renderizarBoletoCompleto() {
             <div class="${claseFila}">
                 <div class="cell-p">${p.id}</div>
                 <div class="cell-chk"><input type="checkbox" class="chk-reducido" data-id="${p.id}" ${checkedStr} onchange="gestionarCambioReduccion(${p.id})"></div>
-                <div class="cell-equipos">${p.nombre}</div>
+                
+                <!-- MEJORA: Input de texto integrado que actualiza la variable 'nombre' al escribir (oninput) -->
+                <div class="cell-equipos">
+                    <input type="text" value="${p.nombre}" oninput="estadoPartidos[${i}].nombre = this.value" style="background: transparent; color: white; border: none; font-weight: bold; font-family: inherit; font-size: 11px; width: 100%; outline: none;">
+                </div>
+
                 <select class="select-pronostico-pro" onchange="estadoPartidos[${i}].pronostico=this.value">
                     <option value="1" ${p.pronostico==='1'?'selected':''}>1</option><option value="X" ${p.pronostico==='X'?'selected':''}>X</option><option value="2" ${p.pronostico==='2'?'selected':''}>2</option>
                     <option value="1X" ${p.pronostico==='1X'?'selected':''}>1X</option><option value="12" ${p.pronostico==='12'?'selected':''}>12</option><option value="X2" ${p.pronostico==='X2'?'selected':''}>X2</option>
@@ -267,7 +361,10 @@ function gestionarCambioReduccion(id) {
 }
 
 
-function guardarCombinacionJSON() {
+// Variable global para recordar el archivo abierto y poder sobrescribirlo
+let handleArchivoActual = null;
+
+async function guardarCombinacionJSON() {
     let configuracion = {
         columnaBase: document.getElementById("columnaBase").value,
         porcentajeCubrir: document.getElementById("porcentajeCubrir").value,
@@ -280,42 +377,104 @@ function guardarCombinacionJSON() {
             difZ2: Array.from(filtrosPulsables.difZ2)
         }
     };
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 2));
-    let dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "config_dashboard_pro.json"); dl.click();
+
+    const contenidoTexto = JSON.stringify(configuracion, null, 2);
+
+    // Si ya tenemos un archivo abierto anteriormente, lo sobrescribimos directamente
+    if (window.showSaveFilePicker && handleArchivoActual) {
+        try {
+            const writable = await handleArchivoActual.createWritable();
+            await writable.write(contenidoTexto);
+            await writable.close();
+            console.log("Archivo único sobrescrito con éxito.");
+            return;
+        } catch (err) {
+            console.log("Error al sobrescribir, reintentando con selector...", err);
+        }
+    }
+
+    // Si es la primera vez, abrimos el selector oficial del sistema operativo
+    if (window.showSaveFilePicker) {
+        try {
+            handleArchivoActual = await window.showSaveFilePicker({
+                suggestedName: 'mi_quiniela_activa.json',
+                types: [{
+                    description: 'Archivo de Configuración Quiniela',
+                    accept: { 'application/json': ['.json'] }
+                }]
+            });
+            const writable = await handleArchivoActual.createWritable();
+            await writable.write(contenidoTexto);
+            await writable.close();
+        } catch (err) {
+            console.log("Guardado cancelado o no soportado.");
+        }
+    } else {
+        // Alternativa de descarga tradicional de emergencia
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(contenidoTexto);
+        let dl = document.createElement('a'); 
+        dl.setAttribute("href", dataStr); 
+        dl.setAttribute("download", "config_dashboard_pro.json"); 
+        dl.click();
+    }
 }
 
-function abrirCombinacionJSON() { document.getElementById("inputAbrirArchivo").click(); }
+async function abrirCombinacionJSON() {
+    if (window.showOpenFilePicker) {
+        try {
+            const [fileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Archivo de Configuración Quiniela',
+                    accept: { 'application/json': ['.json'] }
+                }]
+            });
+            handleArchivoActual = fileHandle; // Vinculamos el archivo para futuras sobrescrituras
+            const file = await fileHandle.getFile();
+            const contenido = await file.text();
+            cargarDatosEnDashboard(contenido);
+        } catch (err) {
+            console.log("Apertura cancelada.");
+        }
+    } else {
+        document.getElementById("inputAbrirArchivo").click();
+    }
+}
 
 function procesarArchivoCargado(event) {
     let input = event.target; 
     if (!input || !input.files || input.files.length === 0) return;
-    
     let reader = new FileReader(); 
     reader.onload = function(e) {
-        try {
-            let config = JSON.parse(e.target.result);
-            if (config.columnaBase) document.getElementById("columnaBase").value = config.columnaBase;
-            if (config.porcentajeCubrir) {
-                document.getElementById("porcentajeCubrir").value = config.porcentajeCubrir;
-                document.getElementById("valPorcentaje").innerText = config.porcentajeCubrir + "%";
-            }
-            if (config.partidos) estadoPartidos = config.partidos;
-            if (config.filtrosPulsables) {
-                filtrosPulsables.basesZ1 = new Set(config.filtrosPulsables.basesZ1 || []);
-                filtrosPulsables.difZ1 = new Set(config.filtrosPulsables.difZ1 || []);
-                filtrosPulsables.unosZ1 = new Set(config.filtrosPulsables.unosZ1 || []);
-                filtrosPulsables.basesZ2 = new Set(config.filtrosPulsables.basesZ2 || []);
-                filtrosPulsables.difZ2 = new Set(config.filtrosPulsables.difZ2 || []);
-            }
-            inicializarTodosLosPaneles(); 
-            procesarMatrizUniversalDinamica();
-        } catch (error) { 
-            alert("Error al procesar el archivo JSON."); 
-        }
+        cargarDatosEnDashboard(e.target.result);
     };
-    reader.readAsText(input.files[0]); 
+    reader.readAsText(input.files[0]);
     input.value = '';
 }
+
+function cargarDatosEnDashboard(textoJSON) {
+    try {
+        let config = JSON.parse(textoJSON);
+        if (config.columnaBase) document.getElementById("columnaBase").value = config.columnaBase;
+        if (config.porcentajeCubrir) {
+            document.getElementById("porcentajeCubrir").value = config.porcentajeCubrir;
+            document.getElementById("valPorcentaje").innerText = config.porcentajeCubrir + "%";
+        }
+        if (config.partidos) estadoPartidos = config.partidos;
+        if (config.filtrosPulsables) {
+            filtrosPulsables.basesZ1 = new Set(config.filtrosPulsables.basesZ1 || []);
+            filtrosPulsables.difZ1 = new Set(config.filtrosPulsables.difZ1 || []);
+            filtrosPulsables.unosZ1 = new Set(config.filtrosPulsables.unosZ1 || []);
+            filtrosPulsables.basesZ2 = new Set(config.filtrosPulsables.basesZ2 || []);
+            filtrosPulsables.difZ2 = new Set(config.filtrosPulsables.difZ2 || []);
+        }
+        inicializarTodosLosPaneles(); 
+        procesarMatrizUniversalDinamica();
+    } catch (error) { 
+        alert("Error al procesar el archivo JSON."); 
+    }
+}
+
+
 
 function procesarMatrizUniversalDinamica() {
     // CORREGIDO: Ahora el motor lee la reducción desde 'estadoPartidos' (Inmune a los fallos de paginación)
@@ -418,62 +577,90 @@ function ejecutarEscrutinioYOrdenacion() {
     if (entrada.length !== 14 || !/^[1X2]+$/.test(entrada)) { alert("Introduce una columna ganadora completa de 14 signos."); return; }
     let ganadora = entrada.split(""); const columnaBase = document.getElementById("columnaBase").value.trim().toUpperCase();
 
+    // Reconstruimos de forma estricta los mapas de cuotas para el escrutinio de signos individuales
+    let mapaCuotasEscrutinio = {};
+    for (let p = 1; p <= 14; p++) {
+        let partido = estadoPartidos[p-1];
+        let sorted = [{ s: "1", v: partido.c1 }, { s: "X", v: partido.cX }, { s: "2", v: partido.c2 }].sort((a, b) => a.v - b.v);
+        // sorted[0] es la Base pura (cuota más baja), sorted[2] es el Difícil puro (cuota más alta)
+        mapaCuotasEscrutinio[p] = { base: sorted[0].s, dificil: sorted[2].s };
+    }
+
     let p14 = 0, p13 = 0, p12 = 0, p11 = 0, p10 = 0, e8 = 0, e7 = 0, e6 = 0, e5 = 0, e4 = 0;
     let registros = [];
 
+    let triplesContados = 0, doblesContados = 0;
+    estadoPartidos.forEach(p => {
+        if (p.pronostico === "1X2" || p.pronostico.length === 3) triplesContados++;
+        else if (p.pronostico.length === 2) doblesContados++;
+    });
+    let fijosContados = 14 - triplesContados - doblesContados;
+
     for (let i = 0; i < apuestasCalculadas.length; i++) {
-        let jugada = apuestasCalculadas[i].split(""); let aciertosElige8 = 0, aciertosQuiniela14 = 0;
+        let jugada = apuestasCalculadas[i].split(""); 
+        let aciertosElige8 = 0, aciertosQuiniela14 = 0;
+        let basesCazadas = 0, dificilesCazados = 0;
+
         for (let p = 0; p < 14; p++) {
             if (jugada[p] !== "_") { if (jugada[p] === ganadora[p]) aciertosElige8++; }
+            
             let signoFinalCompleto = jugada[p] === "_" ? columnaBase[p] : jugada[p];
-            if (signoFinalCompleto === ganadora[p]) aciertosQuiniela14++;
+            if (signoFinalCompleto === ganadora[p]) {
+                aciertosQuiniela14++;
+                
+                // Comprobación estricta y excluyente de aciertos según las cuotas
+                if (signoFinalCompleto === mapaCuotasEscrutinio[p+1].base) {
+                    basesCazadas++;
+                } else if (signoFinalCompleto === mapaCuotasEscrutinio[p+1].dificil) {
+                    dificilesCazados++;
+                }
+            }
         }
+        
         if (aciertosQuiniela14 === 14) p14++; else if (aciertosQuiniela14 === 13) p13++; else if (aciertosQuiniela14 === 12) p12++; else if (aciertosQuiniela14 === 11) p11++; else if (aciertosQuiniela14 === 10) p10++;
         if (aciertosElige8 === 8) e8++; else if (aciertosElige8 === 7) e7++; else if (aciertosElige8 === 6) e6++; else if (aciertosElige8 === 5) e5++; else if (aciertosElige8 === 4) e4++;
 
         let lineaVisual = [];
         for (let p = 0; p < 14; p++) {
-            if (jugada[p] !== "_") { lineaVisual.push(jugada[p]); } 
-            else {
+            if (jugada[p] !== "_") { 
+                lineaVisual.push(jugada[p]); 
+            } else {
                 let valSelect = estadoPartidos[p].pronostico;
                 if (valSelect.includes(ganadora[p])) { lineaVisual.push(ganadora[p]); } else { lineaVisual.push(valSelect.charAt(0)); }
             }
         }
-        registros.push({ lineaOriginal: apuestasCalculadas[i], lineaRenderizada: lineaVisual.join(""), puntos: aciertosElige8 });
+        
+        registros.push({ 
+            lineaOriginal: apuestasCalculadas[i], 
+            lineaRenderizada: lineaVisual.join(""), 
+            puntos: aciertosElige8,
+            metricas: `${triplesContados}T ${doblesContados}D ${fijosContados}F`,
+            escrutinioCuotas: `${basesCazadas} bases, ${dificilesCazados} difíciles` // Formato limpio solicitado
+        });
     }
 
-    // =====================================================================
-    // MOTOR DE ENCHUFADO DE COLORES Y TAMAÑO GIGANTE (SOLICITADO)
-    // =====================================================================
-    // Estilo dinámico para el Pleno de 14 de la Quiniela
-    let estilo14 = p14 > 0 
-        ? `style="color: #ff3e3e; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(255,62,62,0.6); animation: blink 1s infinite;"` 
-        : `style="color: #fb923c; font-weight: bold;"`;
-        
-    // Estilo dinámico para el Pleno de 8 del Elige 8
-    let estiloE8 = e8 > 0 
-        ? `style="color: #4ade80; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(74,222,128,0.6); animation: blink 1s infinite;"` 
-        : `style="color: #fb923c; font-weight: bold;"`;
+    // Inyección de sumatorios globales superiores (Blindado contra nulos)
+    if (document.getElementById("globalApuestas")) document.getElementById("globalApuestas").innerText = apuestasCalculadas.length;
+    if (document.getElementById("globalCondicion")) document.getElementById("globalCondicion").innerText = `${triplesContados}T ${doblesContados}D`;
 
-    // Inyectamos las etiquetas con sus nuevos tamaños y colores en tu Grid
+    let estilo14 = p14 > 0 ? `style="color: #ff3e3e; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(255,62,62,0.6); animation: blink 1s infinite;"` : `style="color: #fb923c; font-weight: bold;"`;
+    let estiloE8 = e8 > 0 ? `style="color: #4ade80; font-size: 22px; font-weight: 900; text-shadow: 0 0 10px rgba(74,222,128,0.6); animation: blink 1s infinite;"` : `style="color: #fb923c; font-weight: bold;"`;
+
     document.getElementById("esc14").innerHTML = `14: <span ${estilo14}>${p14}</span>`;
     document.getElementById("esc13").innerHTML = `13: <span class="val-destacado">${p13}</span>`;
     document.getElementById("esc12").innerHTML = `12: <span class="val-destacado">${p12}</span>`;
     document.getElementById("esc11").innerHTML = `11: <span class="val-destacado">${p11}</span>`;
     document.getElementById("esc10").innerHTML = `10: <span class="val-destacado">${p10}</span>`;
-    
     document.getElementById("escE8").innerHTML = `8: <span ${estiloE8}>${e8}</span>`;
     document.getElementById("escE7").innerHTML = `7: <span class="val-destacado">${e7}</span>`;
-    document.getElementById("escE6").innerHTML = `6: <span class="val-destacado">${e6}</span>`;
-    document.getElementById("escE5").innerHTML = `5: <span class="val-destacado">${e5}</span>`;
-    document.getElementById("escE4").innerHTML = `4: <span class="val-destacado">${e4}</span>`;
+    
+    if(document.getElementById("escE6")) document.getElementById("escE6").innerHTML = `6: <span>${e6}</span>`;
+    if(document.getElementById("escE5")) document.getElementById("escE5").innerHTML = `5: <span>${e5}</span>`;
+    if(document.getElementById("escE4")) document.getElementById("escE4").innerHTML = `4: <span>${e4}</span>`;
 
-    // Añadimos el código CSS de parpadeo directamente en la memoria para que el navegador lo ejecute
     if(!document.getElementById("estiloAnimacionBlink")){
-        let styleSheet = document.createElement("style");
-        styleSheet.id = "estiloAnimacionBlink";
-        styleSheet.innerText = "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }";
-        document.head.appendChild(styleSheet);
+        let styleSheet = document.createElement("style"); styleSheet.id = "estiloAnimacionBlink";
+        styleSheet.innerText = "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }"; document.head.appendChild(styleSheet);
     }
 
     let totalRecaudadoEuros = (p14 * 15000) + (p13 * 250) + (p12 * 15) + (p11 * 3) + (p10 * 1.5) + (e8 * 85);
@@ -481,18 +668,29 @@ function ejecutarEscrutinioYOrdenacion() {
 
     registros.sort((a, b) => b.puntos - a.puntos);
     let cuerpo = document.getElementById("cuerpoTabla"); html = "", lineasTxt = [];
+    
     for (let i = 0; i < registros.length; i++) {
         let item = registros[i];
         let clase = item.puntos === 8 ? 'class="fila-8"' : (item.puntos === 7 ? 'class="fila-7"' : '');
         let textoEstatus = item.puntos === 8 ? '<b>¡Elige 8! 🏆</b>' : (item.puntos === 7 ? 'Arrastre' : 'No');
         let formatoFinalFila = item.lineaRenderizada.split(""); let plantillaOriginal = item.lineaOriginal.split("");
         for (let p = 0; p < 14; p++) { if (plantillaOriginal[p] === "_") formatoFinalFila[p] = "_"; }
-        html += `<tr ${clase}><td><b>#${i+1}</b></td><td><b>${formatoFinalFila.join(" ")}</b></td><td style="text-align:center;"><b>${item.puntos}/8</b></td><td>${textoEstatus}</td></tr>`;
+        
+        html += `<tr ${clase}>
+            <td><b>#${i+1}</b></td>
+            <td><b>${formatoFinalFila.join(" ")}</b></td>
+            <td style="color:#38bdf8; font-weight:bold;">${item.metricas}</td>
+            <td style="color:#fb923c; font-weight:bold;">${item.escrutinioCuotas}</td>
+            <td style="text-align:center;"><b>${item.puntos}/8</b></td>
+            <td>${textoEstatus}</td>
+        </tr>`;
         lineasTxt.push(formatoFinalFila.join(""));
     }
     cuerpo.innerHTML = html; textoTxtDescarga = lineasTxt.join("\r\n");
     document.getElementById("resultadoTabla").style.display = "block";
 }
+
+
 
 function descargarTxtUniversal() {
     let blob = new Blob([textoTxtDescarga], { type: "text/plain;charset=utf-8" });
@@ -528,6 +726,75 @@ function realizar100PruebasMasivas() {
     }
     alert(`📊 SIMULACIÓN (100 JOR.):\nPlenos Elige 8 cazados: ${e8}/100\nArrastres de 7 aciertos: ${e7}/100`);
 }
+
+
+
+
+
+// Función para abrir y cerrar el panel de configuración al pulsar el botón
+function conmutarVisibilidadCreador() {
+    let panel = document.getElementById("panelFormularioCreador");
+    if (panel.style.display === "block") {
+        panel.style.display = "none";
+    } else {
+        generarCamposFormularioCreador();
+        panel.style.display = "block";
+    }
+}
+
+// Genera de forma automatizada las cajas de texto para los 14 partidos dentro del editor
+function generarCamposFormularioCreador() {
+    let contenedor = document.getElementById("camposInyeccionCreador");
+    contenedor.innerHTML = "";
+    
+    estadoPartidos.forEach((p, idx) => {
+        contenedor.innerHTML += `
+            <div class="fila-creador">
+                <span style="color:#f97316; font-weight:bold; width:14px;">${p.id}</span>
+                <input type="text" id="editNombreP${p.id}" value="${p.nombre}" style="flex:1;" placeholder="Local - Visitante">
+                <select id="editProP${p.id}" class="select-pronostico-pro" style="width:46px; height:18px; font-size:10px;">
+                    <option value="1" ${p.pronostico==='1'?'selected':''}>1</option>
+                    <option value="X" ${p.pronostico==='X'?'selected':''}>X</option>
+                    <option value="2" ${p.pronostico==='2'?'selected':''}>2</option>
+                    <option value="1X" ${p.pronostico==='1X'?'selected':''}>1X</option>
+                    <option value="12" ${p.pronostico==='12'?'selected':''}>12</option>
+                    <option value="X2" ${p.pronostico==='X2'?'selected':''}>X2</option>
+                    <option value="1X2" ${p.pronostico==='1X2'?'selected':''}>1X2</option>
+                </select>
+                <input type="number" id="editC1_P${p.id}" class="input-cuota-pro" value="${p.c1}" step="0.01" style="width:32px; height:16px;">
+                <input type="number" id="editCX_P${p.id}" class="input-cuota-pro" value="${p.cX}" step="0.01" style="width:32px; height:16px;">
+                <input type="number" id="editC2_P${p.id}" class="input-cuota-pro" value="${p.c2}" step="0.01" style="width:32px; height:16px;">
+            </div>
+        `;
+    });
+}
+
+// Lee los campos modificados por el usuario, guarda los datos en memoria y refresca el boleto principal
+function aplicarNuevosDatosBoleto() {
+    for (let p = 1; p <= 14; p++) {
+        let nombreVal = document.getElementById(`editNombreP${p}`).value.trim();
+        let proVal = document.getElementById(`editProP${p}`).value;
+        let c1Val = parseFloat(document.getElementById(`editC1_P${p}`).value) || 1.0;
+        let cXVal = parseFloat(document.getElementById(`editCX_P${p}`).value) || 1.0;
+        let c2Val = parseFloat(document.getElementById(`editC2_P${p}`).value) || 1.0;
+
+        // Actualizamos los datos reales de la estructura en memoria
+        estadoPartidos[p-1].nombre = nombreVal;
+        estadoPartidos[p-1].pronostico = proVal;
+        estadoPartidos[p-1].c1 = c1Val;
+        estadoPartidos[p-1].cX = cXVal;
+        estadoPartidos[p-1].c2 = c2Val;
+    }
+
+    // Cerramos el panel emergente de edición
+    document.getElementById("panelFormularioCreador").style.display = "none";
+    
+    // CORREGIDO: Ahora llama correctamente a 'renderizarBoletoCompleto' que es tu función real en memoria
+    renderizarBoletoCompleto();
+}
+
+
+
 
 window.onload = inicializarTodosLosPaneles;
 </script>

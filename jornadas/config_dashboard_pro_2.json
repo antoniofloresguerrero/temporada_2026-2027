@@ -1,0 +1,162 @@
+{
+  "columnaBase": "11212111211112",
+  "porcentajeCubrir": "100",
+  "partidos": [
+    {
+      "id": 1,
+      "nombre": "Athletci-Sevilla",
+      "pronostico": "1X",
+      "c1": 1.66,
+      "cX": 3.4,
+      "c2": 5.25,
+      "esReducido": false
+    },
+    {
+      "id": 2,
+      "nombre": "Valencia-Celta",
+      "pronostico": "1X2",
+      "c1": 2.15,
+      "cX": 3.25,
+      "c2": 3.4,
+      "esReducido": false
+    },
+    {
+      "id": 3,
+      "nombre": "Español-Real Madrid",
+      "pronostico": "2",
+      "c1": 6,
+      "cX": 4,
+      "c2": 1.53,
+      "esReducido": false
+    },
+    {
+      "id": 4,
+      "nombre": "Getae-Racing",
+      "pronostico": "1X2",
+      "c1": 2.05,
+      "cX": 3,
+      "c2": 4.1,
+      "esReducido": false
+    },
+    {
+      "id": 5,
+      "nombre": "Elche-Barcelona",
+      "pronostico": "2",
+      "c1": 9,
+      "cX": 5,
+      "c2": 1.33,
+      "esReducido": false
+    },
+    {
+      "id": 6,
+      "nombre": "Osasuna-Levante",
+      "pronostico": "1",
+      "c1": 1.8,
+      "cX": 3.5,
+      "c2": 4.33,
+      "esReducido": false
+    },
+    {
+      "id": 7,
+      "nombre": "Málaga-Deportivo",
+      "pronostico": "1",
+      "c1": 2.5,
+      "cX": 3.1,
+      "c2": 2.87,
+      "esReducido": false
+    },
+    {
+      "id": 8,
+      "nombre": "Oviedo-Leganés",
+      "pronostico": "1X",
+      "c1": 2.1,
+      "cX": 3.2,
+      "c2": 3.4,
+      "esReducido": false
+    },
+    {
+      "id": 9,
+      "nombre": "Ceuta-Las Palmas",
+      "pronostico": "1X2",
+      "c1": 2.8,
+      "cX": 3.3,
+      "c2": 2.2,
+      "esReducido": true
+    },
+    {
+      "id": 10,
+      "nombre": "Eldense-Cádiz",
+      "pronostico": "1X",
+      "c1": 1.85,
+      "cX": 3.3,
+      "c2": 4.2,
+      "esReducido": false
+    },
+    {
+      "id": 11,
+      "nombre": "Eibar-Valladolid",
+      "pronostico": "12",
+      "c1": 2.2,
+      "cX": 3.3,
+      "c2": 4.2,
+      "esReducido": true
+    },
+    {
+      "id": 12,
+      "nombre": "Castellón-Sabadell",
+      "pronostico": "1",
+      "c1": 1.6,
+      "cX": 3.3,
+      "c2": 6,
+      "esReducido": false
+    },
+    {
+      "id": 13,
+      "nombre": "Sporting-Burgos",
+      "pronostico": "1X2",
+      "c1": 2.2,
+      "cX": 3.3,
+      "c2": 3.8,
+      "esReducido": true
+    },
+    {
+      "id": 14,
+      "nombre": "Tenerife-Almería",
+      "pronostico": "1X2",
+      "c1": 2.8,
+      "cX": 3.3,
+      "c2": 2.3,
+      "esReducido": true
+    }
+  ],
+  "filtrosPulsables": {
+    "basesZ1": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "difZ1": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "unosZ1": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "basesZ2": [
+      2,
+      3,
+      4
+    ],
+    "difZ2": [
+      0,
+      1,
+      2
+    ]
+  }
+}
